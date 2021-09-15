@@ -50,7 +50,6 @@ func GetUintInput(ID []byte, input uint) []byte {
 func main() {
 	testABI, _ := JsonToABI(defaultABIPath)
 	CodeBytes, _ := ReadBIN(defaultBINPath)
-
 	calleraddress := kernel.BytesToAddress([]byte("TestAddress"))
 	evm := CreateExecuteRuntime(calleraddress)
 	caller := kernel.AccountRef(evm.Origin)

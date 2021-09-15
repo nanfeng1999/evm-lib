@@ -29,16 +29,12 @@ type StateDB interface {
 	Suicide(Address) bool
 	HasSuicided(Address) bool
 
-	// Exist reports whether the given account exists in state.
-	// Notably this should also return true for suicided accounts.
 	Exist(Address) bool
-	// Empty returns whether the given account is empty. Empty
-	// is defined according to EIP161 (balance = nonce = code = 0).
 	Empty(Address) bool
 
 	RevertToSnapshot(int)
 	Snapshot() int
-	//Define function aimed at replacement of CanTransfer and Transfer
+
 	HaveSufficientBalance(Address, *big.Int) bool
 	TransferBalance(Address, Address, *big.Int)
 

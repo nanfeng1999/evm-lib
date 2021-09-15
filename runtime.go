@@ -29,6 +29,11 @@ func CreateChainConfig() *kernel.ChainConfig {
 	}
 	return &chainCfg
 }
+
+func NewMockDB() *kernel.MockDB {
+	return &kernel.MockDB{}
+}
+
 func CreateExecuteContext(caller kernel.Address) kernel.Context {
 	context := kernel.Context{
 		Origin:      caller,
@@ -50,9 +55,10 @@ func CreateVMDefaultConfig() kernel.Config {
 	}
 
 }
+
 func CreateExecuteRuntime(caller kernel.Address) *kernel.EVM {
 	context := CreateExecuteContext(caller)
-	stateDB := kernel.MakeNewStateDB()
+	stateDB := kernel.MakeNewStateDB(NewMockDB())
 	chainConfig := CreateChainConfig()
 	vmConfig := CreateVMDefaultConfig()
 	chainHandler := new(kernel.ETHChainHandler)

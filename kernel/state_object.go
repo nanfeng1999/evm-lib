@@ -19,13 +19,20 @@ type StateObject interface {
 	SubBalance(amount *big.Int)
 	SetBalance(amount *big.Int)
 	Address() Address
+	Nonce() uint64
+	SetNonce(nonce uint64)
+	CodeHash() Hash
+	SnapShot()
+	RevertToSnap(pre int)
+	RevertToInit()
 }
 
 type stateObject struct {
-	address       Address             // 账户地址
-	addrHash      Hash                // 账户地址哈希
-	data          Account             // 账户结构体
-	code          []byte              // 智能合约代码字节数组
+	address  Address // 账户地址
+	addrHash Hash    // 账户地址哈希
+	data     Account // 账户结构体
+	code     []byte  // 智能合约代码字节数组
+	//Trie          *mpt.Trie           // MPT 用来存储状态集合 用于最后落库
 	originStorage Storage             // 存储某个账户执行合约过程中的临时状态信息
 	dirtyStorage  [maxSnapNum]Storage // 存储某个账户执行合约过程中之前的状态信息
 	version       int                 // 回退版本号
@@ -45,7 +52,7 @@ func newStateObject(addr Address, account Account) *stateObject {
 	}
 	return &stateObject{
 		address:       addr,                                // 账户地址
-		addrHash:      Hash(crypto.Keccak256Hash(addr[:])), //  账户地址哈希
+		addrHash:      Hash(crypto.Keccak256Hash(addr[:])), // 账户地址哈希
 		data:          account,                             // 账户结构体
 		originStorage: make(map[Hash]Hash),                 //存储某个账户执行合约过程中的临时状态信息
 		version:       -1,
@@ -89,6 +96,7 @@ func (obj *stateObject) SetBalance(amount *big.Int) {
 func (obj *stateObject) Address() Address {
 	return obj.address
 }
+
 func (obj *stateObject) Nonce() uint64 {
 	return obj.data.Nonce
 }

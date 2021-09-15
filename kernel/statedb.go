@@ -1,7 +1,7 @@
 package kernel
 
 import (
-	"evm/database"
+	"errors"
 	"math/big"
 )
 
@@ -9,22 +9,33 @@ const (
 	maxSnapNum = 10
 )
 
+var (
+	StateObjectNotFoundErr = errors.New("stateObject not exist")
+)
+
 type MStateDB struct {
-	db           database.DB              // 落库的数据库引用
+	db           DB                       // 落库的数据库引用
 	stateObjects map[Address]*stateObject // 缓存
-	version      int
+	version      int                      // 快照版本号
 }
 
 var _ StateDB = (*MStateDB)(nil)
 
-func MakeNewStateDB() StateDB {
+func MakeNewStateDB(db DB) StateDB {
 	statedb := new(MStateDB)
+	statedb.db = db
 	statedb.stateObjects = make(map[Address]*stateObject)
 	statedb.version = -1
 	return statedb
 }
 
 func (s *MStateDB) createObject(addr Address) *stateObject {
+	// judge if the database has the account
+	old := s.db.OpenAccount(addr)
+	if old != nil {
+		s.stateObjects[addr] = old
+		return old
+	}
 	obj := newStateObject(addr, Account{})
 	s.stateObjects[addr] = obj
 	return obj
@@ -42,6 +53,7 @@ func (s *MStateDB) SubBalance(addr Address, amount *big.Int) {
 	obj := s.getStateObject(addr)
 	if obj != nil {
 		obj.SubBalance(amount)
+
 	}
 }
 func (s *MStateDB) AddBalance(addr Address, amount *big.Int) {
