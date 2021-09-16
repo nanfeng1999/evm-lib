@@ -9,6 +9,7 @@ package kernel
 
 import (
 	"evm/crypto"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"math/big"
 )
 
@@ -28,11 +29,11 @@ type StateObject interface {
 }
 
 type stateObject struct {
-	address  Address // 账户地址
-	addrHash Hash    // 账户地址哈希
-	data     Account // 账户结构体
-	code     []byte  // 智能合约代码字节数组
-	//Trie          *mpt.Trie           // MPT 用来存储状态集合 用于最后落库
+	abi           *abi.ABI            // 智能合约二进制文件接口
+	address       Address             // 账户地址
+	addrHash      Hash                // 账户地址哈希
+	data          Account             // 账户结构体
+	code          []byte              // 智能合约代码字节数组
 	originStorage Storage             // 存储某个账户执行合约过程中的临时状态信息
 	dirtyStorage  [maxSnapNum]Storage // 存储某个账户执行合约过程中之前的状态信息
 	version       int                 // 回退版本号

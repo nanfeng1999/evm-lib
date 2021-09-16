@@ -37,8 +37,11 @@ type ContractRef interface {
 type AccountRef Address
 
 // Address casts AccountRef to a Address
-func (ar AccountRef) Address() Address                              { return (Address)(ar) }
-func (ar AccountRef) CreateContractAddress(Address, uint64) Address { return (Address)(ar) }
+func (ar AccountRef) Address() Address { return (Address)(ar) }
+func (ar AccountRef) CreateContractAddress(b Address, nonce uint64) Address {
+	data, _ := rlp.EncodeToBytes([]interface{}{b, nonce})
+	return BytesToAddress(Keccak256(data)[12:])
+}
 
 // Contract represents an ethereum contract in the state database. It contains
 // the the contract code, calling arguments. Contract implements ContractRef

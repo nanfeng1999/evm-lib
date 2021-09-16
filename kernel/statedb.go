@@ -2,6 +2,8 @@ package kernel
 
 import (
 	"errors"
+	"fmt"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"math/big"
 )
 
@@ -45,6 +47,25 @@ func (s *MStateDB) CreateAccount(addr Address) {
 	s.createObject(addr)
 }
 
+func (s *MStateDB) SetABI(addr Address, abi *abi.ABI) {
+	obj := s.getStateObject(addr)
+	if obj != nil {
+		s.setABI(addr, abi)
+	}
+}
+
+func (s *MStateDB) GetABI(addr Address) *abi.ABI {
+	obj := s.getStateObject(addr)
+	if obj != nil {
+		return s.stateObjects[addr].abi
+	}
+	return nil
+}
+
+func (s *MStateDB) setABI(addr Address, abi *abi.ABI) {
+	s.stateObjects[addr].abi = abi
+}
+
 func (s *MStateDB) getStateObject(addr Address) *stateObject {
 	return s.stateObjects[addr]
 }
@@ -53,7 +74,6 @@ func (s *MStateDB) SubBalance(addr Address, amount *big.Int) {
 	obj := s.getStateObject(addr)
 	if obj != nil {
 		obj.SubBalance(amount)
-
 	}
 }
 func (s *MStateDB) AddBalance(addr Address, amount *big.Int) {
@@ -145,6 +165,7 @@ func (s *MStateDB) Empty(addr Address) bool {
 }
 
 func (s *MStateDB) RevertToSnapshot(pre int) {
+	fmt.Println("回退")
 	for _, obj := range s.stateObjects {
 		obj.RevertToSnap(pre)
 	}

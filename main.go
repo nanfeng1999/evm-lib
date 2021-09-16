@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"evm/kernel"
+	"evm/runtime"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -51,13 +52,15 @@ func main() {
 	testABI, _ := JsonToABI(defaultABIPath)
 	CodeBytes, _ := ReadBIN(defaultBINPath)
 	calleraddress := kernel.BytesToAddress([]byte("TestAddress"))
-	evm := CreateExecuteRuntime(calleraddress)
+	evm := runtime.CreateExecuteRuntime(calleraddress, kernel.MakeNewStateDB(new(kernel.MockDB)))
 	caller := kernel.AccountRef(evm.Origin)
 
 	ret, contractAddr, _, err := evm.Create(caller, CodeBytes, evm.GasLimit, new(big.Int))
-
-	input := GetUintInput(testABI.Methods["set"].ID, 100)
-
+	fmt.Println("addr:", contractAddr.Hex())
+	//fmt.Println("input:",string(testABI.Methods["set"].ID))
+	//input := GetUintInput(testABI.Methods["set"].ID, 100)
+	input, err := testABI.Pack("set", big.NewInt(100))
+	//fmt.Println(testABI.Methods["set"].Inputs[0].Type)
 	ret, _, err = evm.Call(
 		caller,
 		contractAddr,

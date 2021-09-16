@@ -1,4 +1,4 @@
-package main
+package runtime
 
 import (
 	"evm/kernel"
@@ -56,9 +56,9 @@ func CreateVMDefaultConfig() kernel.Config {
 
 }
 
-func CreateExecuteRuntime(caller kernel.Address) *kernel.EVM {
+func CreateExecuteRuntime(caller kernel.Address, db kernel.StateDB) *kernel.EVM {
 	context := CreateExecuteContext(caller)
-	stateDB := kernel.MakeNewStateDB(NewMockDB())
+	stateDB := db
 	chainConfig := CreateChainConfig()
 	vmConfig := CreateVMDefaultConfig()
 	chainHandler := new(kernel.ETHChainHandler)

@@ -1,12 +1,16 @@
 package kernel
 
 import (
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"math/big"
 )
 
 // StateDB is an EVM database for full state querying.
 type StateDB interface {
 	CreateAccount(Address)
+
+	SetABI(Address, *abi.ABI)
+	GetABI(Address) *abi.ABI
 
 	SubBalance(Address, *big.Int)
 	AddBalance(Address, *big.Int)
