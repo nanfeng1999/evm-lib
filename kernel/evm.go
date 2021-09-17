@@ -15,6 +15,7 @@
 package kernel
 
 import (
+	"fmt"
 	"math/big"
 	"sync/atomic"
 	"time"
@@ -295,6 +296,8 @@ func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.I
 	}
 	// Ensure there's no existing contract already at the designated address
 	nonce := evm.StateDBHandler.GetNonce(caller.Address())
+	fmt.Println(caller.Address().Hex(), nonce)
+
 	evm.StateDBHandler.SetNonce(caller.Address(), nonce+1)
 
 	contractAddr = caller.CreateContractAddress(caller.Address(), nonce)

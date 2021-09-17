@@ -10,6 +10,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	mongodb "evm/cmd/db"
 	"evm/kernel"
 	"evm/runtime"
 	"fmt"
@@ -29,17 +30,17 @@ const (
 
 // command set
 const (
-	RUN = "run"
-	ADD = "add"
+	RUN     = "run"
+	ADD     = "add"
+	CREATE  = "create"
+	ADDRESS = "address"
 )
 
 // error when exec occurs
 var (
-	createContactErr  = errors.New("contact: create contact fail")
-	unMarshalParamErr = errors.New("unmarshal param fail")
-	parseAbiErr       = errors.New("parse abi file fail")
-	abiNotExitErr     = errors.New("abi not exist")
-	funcNotExitErr    = errors.New("func not exist")
+	parseAbiErr    = errors.New("parse abi file fail")
+	abiNotExitErr  = errors.New("abi not exist")
+	funcNotExitErr = errors.New("func not exist")
 )
 
 var db = kernel.MakeNewStateDB(new(kernel.MockDB))
@@ -51,9 +52,8 @@ type Request struct {
 }
 
 type Response struct {
-	ErrMsg      string // 需要返回的错误信息
-	ContactAddr string // 合约地址
-	Result      string // 执行合约结果
+	ErrMsg string // 需要返回的错误信息
+	Result string //
 }
 
 type ContactInfo struct {
@@ -69,11 +69,20 @@ type RunContact struct {
 	Sign        string // 函数签名
 }
 
-func makeNewResponse(ErrMsg string, addr string, result string) *Response {
+type Account struct {
+	Name     string
+	Password string
+	Adderss  string
+}
+
+type Name struct {
+	Name string
+}
+
+func makeNewResponse(ErrMsg string, result string) *Response {
 	return &Response{
-		ErrMsg:      ErrMsg,
-		ContactAddr: addr,
-		Result:      result,
+		ErrMsg: ErrMsg,
+		Result: result,
 	}
 }
 
@@ -88,7 +97,6 @@ func main() {
 			log.Println("get conn fail,err is:", err)
 			continue
 		}
-		fmt.Println("conn:", conn.RemoteAddr())
 		var req Request
 		jsonReader := json.NewDecoder(conn)
 
@@ -105,22 +113,38 @@ func main() {
 				addr, err := dealContactAddCmd(req.Parameters)
 
 				if err != nil {
-					res = makeNewResponse(err.Error(), "", "")
+					res = makeNewResponse(err.Error(), "")
 				} else {
-					res = makeNewResponse("", addr.Hex(), "")
+					res = makeNewResponse("", addr.Hex())
 				}
 			case RUN:
 				ret, err := dealContactRunCmd(req.Parameters)
 				if err != nil {
-					res = makeNewResponse(err.Error(), "", "")
+					res = makeNewResponse(err.Error(), "")
 				} else {
-					res = makeNewResponse("", "", ret)
+					res = makeNewResponse("", ret)
 				}
 			default:
 				fmt.Println("the command is null or not correct")
 			}
 		case ACCOUNT:
 			switch req.Command {
+			case CREATE:
+				err := dealAccountCreateCmd(req.Parameters)
+
+				if err != nil {
+					res = makeNewResponse(err.Error(), "")
+				} else {
+					res = makeNewResponse("", "create account success")
+				}
+			case ADDRESS:
+				addr, err := dealAccountAddrCmd(req.Parameters)
+
+				if err != nil {
+					res = makeNewResponse(err.Error(), "")
+				} else {
+					res = makeNewResponse("", addr)
+				}
 			default:
 				fmt.Println("the command is null or not correct")
 			}
@@ -208,8 +232,40 @@ func dealContactRunCmd(param []byte) (string, error) {
 	return kernel.Bytes2Hex(ret), nil
 }
 
-func dealAccountCmd(param []byte) {
+func dealAccountCreateCmd(param []byte) error {
+	var account Account
+	err := json.Unmarshal(param, &account)
+	if err != nil {
+		fmt.Println("unmarshal param fail,the err is ", err)
+		return err
+	}
 
+	addr, err := mongodb.CreateAccount(account.Name, account.Password)
+	if err != nil {
+		return err
+	}
+
+	// create stateObject for account
+	db.CreateAccount(kernel.HexToAddress(addr))
+
+	return nil
+}
+
+func dealAccountAddrCmd(param []byte) (string, error) {
+	var name Name
+	err := json.Unmarshal(param, &name)
+	if err != nil {
+		fmt.Println("unmarshal param fail,the err is ", err)
+		return "", err
+	}
+
+	addr, err := mongodb.GetAccountAddr(name.Name)
+	if err != nil {
+		fmt.Println("get account fail,the err is ", err)
+		return "", err
+	}
+
+	return addr, nil
 }
 
 func getInput(abi *abi.ABI, sign string, inputRaw string) ([]byte, error) {

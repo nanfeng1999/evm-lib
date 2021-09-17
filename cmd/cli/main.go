@@ -12,6 +12,7 @@ import (
 	"errors"
 	"evm/kernel"
 	"fmt"
+
 	"github.com/peterh/liner"
 	"github.com/urfave/cli/v2"
 	"io/ioutil"
@@ -23,9 +24,12 @@ import (
 
 const cmdHistoryPath = "/tmp/mis-cli"
 
-var commandList = []string{
-	"contact", "add", "run", "--abi", "--bin", "--addr", "--func", "--input",
-}
+var (
+	commandList = [][]string{
+		{"contact", "add", "run"},
+		{"account", "create", "address"},
+	}
+)
 
 // type set
 const (
@@ -35,8 +39,10 @@ const (
 
 // command set
 const (
-	RUN = "run"
-	ADD = "add"
+	RUN     = "run"
+	ADD     = "add"
+	CREATE  = "create"
+	ADDRESS = "address"
 )
 
 type Request struct {
@@ -51,6 +57,16 @@ type ContactInfo struct {
 	Bin  []byte
 }
 
+type Account struct {
+	Name     string
+	Password string
+	Adderss  string
+}
+
+type Name struct {
+	Name string
+}
+
 type RunContact struct {
 	Input       string // 输入
 	AccountAddr string // 账户地址
@@ -59,9 +75,8 @@ type RunContact struct {
 }
 
 type Response struct {
-	ErrMsg      string // 需要返回的错误信息
-	ContactAddr string // 合约地址
-	Result      string // 运行结果
+	ErrMsg string // 需要返回的错误信息
+	Result string // 运行结果
 }
 
 // new func of request
@@ -81,9 +96,11 @@ func main() {
 	line.SetCtrlCAborts(true)
 	// 自动补全功能
 	line.SetCompleter(func(li string) (res []string) {
-		for _, c := range commandList {
-			if strings.HasPrefix(c, li) {
-				res = append(res, strings.ToLower(c))
+		for _, command := range commandList {
+			for _, c := range command {
+				if strings.HasPrefix(c, li) {
+					res = append(res, strings.ToLower(c))
+				}
 			}
 		}
 		return
@@ -105,7 +122,9 @@ func main() {
 		}
 	}()
 
-	prompt := "mis-cli>>"
+	printDescription()
+
+	prompt := "mis-cli>"
 	for {
 		cmd, err := line.Prompt(prompt)
 		if err != nil {
@@ -126,22 +145,40 @@ func main() {
 			fmt.Println("bye")
 			break
 		} else {
+
 			// execute the command and print the reply.
 			line.AppendHistory(cmd)
 			app := &cli.App{
 				Name:  "mis-cli",
 				Usage: "mic cmd tool for contact",
 				Commands: []*cli.Command{
-					addContactCommand(),
-					runContactCommand(),
+					contactCommand(),
+					accountCommand(),
 				},
 			}
+
+			c = append([]string{"cmd"}, c...)
 
 			err := app.Run(c)
 			if err != nil {
 				fmt.Printf("(error) %v \n", err)
 			}
 		}
+	}
+}
+
+func printDescription() {
+	fmt.Println("Copyright (c) 2021, pku-min-lab and/or its affiliates. All rights reserved.\n\nType 'help;' or '\\h' for help. Type '\\c' to clear the current input statement.\n")
+}
+
+func contactCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "contact",
+		Usage: "contact command",
+		Subcommands: []*cli.Command{
+			addContactCommand(),
+			runContactCommand(),
+		},
 	}
 }
 
@@ -208,8 +245,8 @@ func addContact(c *cli.Context) error {
 		return err
 	}
 
-	if response.ContactAddr != "" {
-		fmt.Println("contact address: ", response.ContactAddr)
+	if response.Result != "" {
+		fmt.Println("contact address: ", response.Result)
 	} else {
 		return errors.New(response.ErrMsg)
 	}
@@ -219,9 +256,8 @@ func addContact(c *cli.Context) error {
 
 func runContactCommand() *cli.Command {
 	return &cli.Command{
-		Name:   "run",
-		Usage:  "run contact",
-		Hidden: true,
+		Name:  "run",
+		Usage: "run contact",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "accountAddr",
@@ -281,6 +317,127 @@ func runContact(c *cli.Context) error {
 
 	if response.ErrMsg == "" {
 		fmt.Println("result:", response.Result)
+	} else {
+		return errors.New(response.ErrMsg)
+	}
+	conn.Close()
+	return nil
+}
+
+func accountCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "account",
+		Usage: "account command",
+		Subcommands: []*cli.Command{
+			createAccountCommand(),
+			getAccountAddrCommand(),
+		},
+	}
+}
+
+func createAccountCommand() *cli.Command {
+	return &cli.Command{
+		Name:  "create",
+		Usage: "create a new account",
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "name",
+				Aliases:  []string{"n"},
+				Usage:    "the name of account",
+				Required: true,
+			},
+			&cli.StringFlag{
+				Name:     "password",
+				Aliases:  []string{"p"},
+				Usage:    "the password of account",
+				Required: true,
+			},
+		},
+		Action: createAccount,
+	}
+}
+
+func createAccount(c *cli.Context) error {
+	account := Account{
+		Name:     c.String("name"),
+		Password: c.String("password"),
+	}
+
+	paramData, _ := json.Marshal(&account)
+
+	req := makeNewRequest(ACCOUNT, CREATE, paramData)
+
+	// send request
+	data, _ := json.Marshal(req)
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:8080", 2*time.Second)
+	if err != nil {
+		return err
+	}
+	_, err = conn.Write(data)
+	if err != nil {
+		return err
+	}
+	// get response
+	var response Response
+	decoder := json.NewDecoder(conn)
+	err = decoder.Decode(&response)
+	if err != nil {
+		return err
+	}
+
+	if response.ErrMsg == "" {
+		fmt.Println(response.Result)
+	} else {
+		return errors.New(response.ErrMsg)
+	}
+	conn.Close()
+	return nil
+}
+
+func getAccountAddrCommand() *cli.Command {
+	return &cli.Command{
+		Name:   "address",
+		Usage:  "get a account address",
+		Action: getAccountAddress,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:     "name",
+				Aliases:  []string{"n"},
+				Usage:    "the name of account",
+				Required: true,
+			},
+		},
+	}
+}
+
+func getAccountAddress(c *cli.Context) error {
+	name := Name{
+		Name: c.String("name"),
+	}
+	paramData, _ := json.Marshal(&name)
+
+	req := makeNewRequest(ACCOUNT, ADDRESS, paramData)
+
+	// send request
+	data, _ := json.Marshal(req)
+	conn, err := net.DialTimeout("tcp", "127.0.0.1:8080", 2*time.Second)
+	if err != nil {
+		return err
+	}
+	_, err = conn.Write(data)
+	if err != nil {
+		return err
+	}
+	// get response
+	var response Response
+	decoder := json.NewDecoder(conn)
+	err = decoder.Decode(&response)
+	if err != nil {
+		return err
+	}
+
+	if response.ErrMsg == "" {
+		fmt.Println("address:", response.Result)
 	} else {
 		return errors.New(response.ErrMsg)
 	}
