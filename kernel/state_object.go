@@ -53,10 +53,10 @@ func newStateObject(addr common.Address, account Account) *stateObject {
 		account.CodeHash = emptyHash
 	}
 	return &stateObject{
-		address:       addr,                                       // 账户地址
-		addrHash:      common.Hash(crypto.Keccak256Hash(addr[:])), // 账户地址哈希
-		data:          account,                                    // 账户结构体
-		originStorage: make(map[common.Hash]common.Hash),          //存储某个账户执行合约过程中的临时状态信息
+		address:       addr,                              // 账户地址
+		addrHash:      crypto.Keccak256Hash(addr[:]),     // 账户地址哈希
+		data:          account,                           // 账户结构体
+		originStorage: make(map[common.Hash]common.Hash), //存储某个账户执行合约过程中的临时状态信息
 		version:       -1,
 	}
 }

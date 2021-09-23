@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/yzy-github/evm-lib/abi"
 	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/rlp"
 	"math/big"
 )
 
@@ -17,7 +18,7 @@ var (
 )
 
 type MStateDB struct {
-	db           DB                              // 落库的数据库引用
+	DB           DB                              // 落库的数据库引用
 	stateObjects map[common.Address]*stateObject // 缓存
 	version      int                             // 快照版本号
 }
@@ -26,21 +27,17 @@ var _ StateDB = (*MStateDB)(nil)
 
 func MakeNewStateDB(db DB) StateDB {
 	statedb := new(MStateDB)
-	statedb.db = db
+	statedb.DB = db
 	statedb.stateObjects = make(map[common.Address]*stateObject)
 	statedb.version = -1
 	return statedb
 }
 
 func (s *MStateDB) createObject(addr common.Address) *stateObject {
-	// judge if the database has the account
-	old := s.db.OpenAccount(addr)
-	if old != nil {
-		s.stateObjects[addr] = old
-		return old
-	}
 	obj := newStateObject(addr, Account{})
 	s.stateObjects[addr] = obj
+	bytes, _ := rlp.EncodeToBytes(obj)
+	_ = s.DB.SaveToDB(addr, bytes)
 	return obj
 }
 
@@ -67,7 +64,22 @@ func (s *MStateDB) setABI(addr common.Address, abi *abi.ABI) {
 	s.stateObjects[addr].abi = abi
 }
 
+func (s *MStateDB) decodeToStateObject(bytes []byte) *stateObject {
+	var obj stateObject
+	err := rlp.DecodeBytes(bytes, obj)
+	if err != nil {
+		return nil
+	}
+	return &obj
+}
+
 func (s *MStateDB) getStateObject(addr common.Address) *stateObject {
+	if _, exist := s.stateObjects[addr]; !exist {
+		objBytes := s.DB.OpenAccount(addr)
+		if objBytes != nil {
+			s.stateObjects[addr] = s.decodeToStateObject(objBytes)
+		}
+	}
 	return s.stateObjects[addr]
 }
 

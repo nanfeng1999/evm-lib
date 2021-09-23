@@ -11,29 +11,29 @@ import "github.com/yzy-github/evm-lib/common"
 
 type DB interface {
 	// 根据传入的hash 从数据库中取出rlp编码的stateObject 并进行解码
-	OpenAccount(addr common.Address) *stateObject
+	OpenAccount(addr common.Address) []byte
 	// 传入stateObject 对其进行rlp编码 然后插入数据库中去
-	SaveToDB(*stateObject) error
+	SaveToDB(common.Address, []byte) error
 	// 数据库是否存在账户
 	ExistAccount(common.Address) bool
 	// 更新账户数据
-	UpdateAccount(common.Address, *stateObject) error
+	UpdateAccount(common.Address, []byte) error
 }
 
 type MockDB struct{}
 
-func (*MockDB) OpenAccount(addr common.Address) *stateObject {
+func (*MockDB) OpenAccount(addr common.Address) []byte {
 	return nil
 }
 
-func (*MockDB) SaveToDB(object *stateObject) error {
+func (*MockDB) SaveToDB(common.Address, []byte) error {
 	return nil
 }
 
-func (*MockDB) ExistAccount(address common.Address) bool {
+func (*MockDB) ExistAccount(common.Address) bool {
 	return true
 }
 
-func (MockDB) UpdateAccount(address common.Address, object *stateObject) error {
+func (MockDB) UpdateAccount(common.Address, []byte) error {
 	return nil
 }
