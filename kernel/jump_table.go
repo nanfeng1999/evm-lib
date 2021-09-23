@@ -19,7 +19,7 @@ package kernel
 import (
 	"errors"
 	"math/big"
-	//"github.com/ethereum/go-ethereum/params"
+	//"evm/params"
 )
 
 type (

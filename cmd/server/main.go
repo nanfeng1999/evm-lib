@@ -10,11 +10,12 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"evm/abi"
 	mongodb "evm/cmd/db"
+	"evm/common"
 	"evm/kernel"
 	"evm/runtime"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"log"
 	"math/big"
 	"net"
@@ -161,28 +162,28 @@ func main() {
 
 }
 
-func dealContactAddCmd(param []byte) (kernel.Address, error) {
+func dealContactAddCmd(param []byte) (common.Address, error) {
 	var contactInfo ContactInfo
 	err := json.Unmarshal(param, &contactInfo)
 	if err != nil {
 		fmt.Println("unmarshal param fail,the err is ", err)
-		return kernel.Address{}, err
+		return common.Address{}, err
 	}
 
 	var abi abi.ABI
 	err = json.Unmarshal(contactInfo.Abi, &abi)
 	if err != nil {
 		fmt.Println("parse abi file fail,the err is ", err)
-		return kernel.Address{}, parseAbiErr
+		return common.Address{}, parseAbiErr
 	}
 
 	calleraddress := contactInfo.Addr
-	evm := runtime.CreateExecuteRuntime(kernel.HexToAddress(calleraddress), db)
+	evm := runtime.CreateExecuteRuntime(common.HexToAddress(calleraddress), db)
 	caller := kernel.AccountRef(evm.Origin)
-	_, contractAddr, _, err := evm.Create(caller, kernel.FromHex(string(contactInfo.Bin)), evm.GasLimit, new(big.Int))
+	_, contractAddr, _, err := evm.Create(caller, common.FromHex(string(contactInfo.Bin)), evm.GasLimit, new(big.Int))
 	if err != nil {
 		fmt.Println("create contact fail,the err is ", err)
-		return kernel.Address{}, err
+		return common.Address{}, err
 	}
 
 	db.SetABI(contractAddr, &abi)
@@ -199,7 +200,7 @@ func dealContactRunCmd(param []byte) (string, error) {
 		return "", err
 	}
 
-	var contactAddr = kernel.HexToAddress(runContact.ContactAddr)
+	var contactAddr = common.HexToAddress(runContact.ContactAddr)
 	_abi := db.GetABI(contactAddr)
 
 	if _abi == nil {
@@ -212,7 +213,7 @@ func dealContactRunCmd(param []byte) (string, error) {
 		return "", funcNotExitErr
 	}
 
-	calleraddress := kernel.HexToAddress(runContact.AccountAddr)
+	calleraddress := common.HexToAddress(runContact.AccountAddr)
 	evm := runtime.CreateExecuteRuntime(calleraddress, db)
 	caller := kernel.AccountRef(evm.Origin)
 	input, _ := getInput(_abi, runContact.Sign, runContact.Input)
@@ -228,8 +229,8 @@ func dealContactRunCmd(param []byte) (string, error) {
 		return "", err
 	}
 
-	fmt.Println("run contact success,the result is ", kernel.Bytes2Hex(ret))
-	return kernel.Bytes2Hex(ret), nil
+	fmt.Println("run contact success,the result is ", common.Bytes2Hex(ret))
+	return common.Bytes2Hex(ret), nil
 }
 
 func dealAccountCreateCmd(param []byte) error {
@@ -246,7 +247,7 @@ func dealAccountCreateCmd(param []byte) error {
 	}
 
 	// create stateObject for account
-	db.CreateAccount(kernel.HexToAddress(addr))
+	db.CreateAccount(common.HexToAddress(addr))
 
 	return nil
 }

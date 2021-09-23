@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"evm/abi"
+	"evm/common"
 	"evm/kernel"
 	"evm/runtime"
 	"fmt"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
 	"io/ioutil"
 	"math/big"
 	"os"
@@ -40,7 +40,7 @@ func ReadBIN(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return kernel.FromHex(string(bytes)), nil
+	return common.FromHex(string(bytes)), nil
 }
 
 func GetUintInput(ID []byte, input uint) []byte {
@@ -51,7 +51,7 @@ func GetUintInput(ID []byte, input uint) []byte {
 func main() {
 	testABI, _ := JsonToABI(defaultABIPath)
 	CodeBytes, _ := ReadBIN(defaultBINPath)
-	calleraddress := kernel.BytesToAddress([]byte("TestAddress"))
+	calleraddress := common.BytesToAddress([]byte("TestAddress"))
 	evm := runtime.CreateExecuteRuntime(calleraddress, kernel.MakeNewStateDB(new(kernel.MockDB)))
 	caller := kernel.AccountRef(evm.Origin)
 
@@ -70,7 +70,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println(kernel.Bytes2Hex(ret))
+		fmt.Println(common.Bytes2Hex(ret))
 	}
 
 	input = testABI.Methods["power"].ID
@@ -83,7 +83,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println(kernel.Bytes2Hex(ret))
+		fmt.Println(common.Bytes2Hex(ret))
 	}
 }
 

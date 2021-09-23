@@ -1,8 +1,10 @@
 package kernel
 
+import "evm/common"
+
 type ETHChainHandler struct{}
 
-func (ethChainHandler *ETHChainHandler) GetBlockHeaderHash(uint64) Hash {
+func (ethChainHandler *ETHChainHandler) GetBlockHeaderHash(uint64) common.Hash {
 	//just return a fake value
-	return HexToHash("this is a demo")
+	return common.HexToHash("this is a demo")
 }

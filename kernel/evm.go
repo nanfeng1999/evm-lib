@@ -15,6 +15,7 @@
 package kernel
 
 import (
+	"evm/common"
 	"fmt"
 	"math/big"
 	"sync/atomic"
@@ -102,7 +103,7 @@ func (evm *EVM) Cancel() {
 // parameters. It also handles any necessary value transfer required and takes
 // the necessary steps to create accounts and reverses the state in case of an
 // execution error or failed value transfer.
-func (evm *EVM) Call(caller ContractRef, addr Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
+func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
 	if evm.vmConfig.NoRecursion && evm.depth > 0 {
 		return nil, gas, nil
 	}
@@ -173,7 +174,7 @@ func (evm *EVM) Call(caller ContractRef, addr Address, input []byte, gas uint64,
 //
 // CallCode differs from Call in the sense that it executes the given address'
 // code with the caller as context.
-func (evm *EVM) CallCode(caller ContractRef, addr Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
+func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, gas uint64, value *big.Int) (ret []byte, leftOverGas uint64, err error) {
 	if evm.vmConfig.NoRecursion && evm.depth > 0 {
 		return nil, gas, nil
 	}
@@ -212,7 +213,7 @@ func (evm *EVM) CallCode(caller ContractRef, addr Address, input []byte, gas uin
 //
 // DelegateCall differs from CallCode in the sense that it executes the given address'
 // code with the caller as context and the caller is set to the caller of the caller.
-func (evm *EVM) DelegateCall(caller ContractRef, addr Address, input []byte, gas uint64) (ret []byte, leftOverGas uint64, err error) {
+func (evm *EVM) DelegateCall(caller ContractRef, addr common.Address, input []byte, gas uint64) (ret []byte, leftOverGas uint64, err error) {
 	if evm.vmConfig.NoRecursion && evm.depth > 0 {
 		return nil, gas, nil
 	}
@@ -244,7 +245,7 @@ func (evm *EVM) DelegateCall(caller ContractRef, addr Address, input []byte, gas
 // as parameters while disallowing any modifications to the state during the call.
 // Opcodes that attempt to perform such modifications will result in exceptions
 // instead of performing the modifications.
-func (evm *EVM) StaticCall(caller ContractRef, addr Address, input []byte, gas uint64) (ret []byte, leftOverGas uint64, err error) {
+func (evm *EVM) StaticCall(caller ContractRef, addr common.Address, input []byte, gas uint64) (ret []byte, leftOverGas uint64, err error) {
 	if evm.vmConfig.NoRecursion && evm.depth > 0 {
 		return nil, gas, nil
 	}
@@ -284,15 +285,15 @@ func (evm *EVM) StaticCall(caller ContractRef, addr Address, input []byte, gas u
 }
 
 // Create creates a new contract using code as deployment code.
-func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.Int) (ret []byte, contractAddr Address, leftOverGas uint64, err error) {
+func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.Int) (ret []byte, contractAddr common.Address, leftOverGas uint64, err error) {
 
 	// Depth check execution. Fail if we're trying to execute above the
 	// limit.
 	if evm.depth > int(CallCreateDepth) {
-		return nil, Address{}, gas, ErrDepth
+		return nil, common.Address{}, gas, ErrDepth
 	}
 	if !evm.StateDBHandler.HaveSufficientBalance(caller.Address(), value) {
-		return nil, Address{}, gas, ErrInsufficientBalance
+		return nil, common.Address{}, gas, ErrInsufficientBalance
 	}
 	// Ensure there's no existing contract already at the designated address
 	nonce := evm.StateDBHandler.GetNonce(caller.Address())
@@ -302,8 +303,8 @@ func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.I
 
 	contractAddr = caller.CreateContractAddress(caller.Address(), nonce)
 	contractHash := evm.StateDBHandler.GetCodeHash(contractAddr)
-	if evm.StateDBHandler.GetNonce(contractAddr) != 0 || (contractHash != (Hash{}) && contractHash != emptyCodeHash) {
-		return nil, Address{}, 0, ErrContractAddressCollision
+	if evm.StateDBHandler.GetNonce(contractAddr) != 0 || (contractHash != (common.Hash{}) && contractHash != emptyCodeHash) {
+		return nil, common.Address{}, 0, ErrContractAddressCollision
 	}
 	// Create a new account on the state
 	snapshot := evm.StateDBHandler.Snapshot()

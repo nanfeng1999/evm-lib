@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"evm/common"
 	"evm/kernel"
 	"math/big"
 	"time"
@@ -34,11 +35,11 @@ func NewMockDB() *kernel.MockDB {
 	return &kernel.MockDB{}
 }
 
-func CreateExecuteContext(caller kernel.Address) kernel.Context {
+func CreateExecuteContext(caller common.Address) kernel.Context {
 	context := kernel.Context{
 		Origin:      caller,
 		GasPrice:    new(big.Int),
-		Coinbase:    kernel.BytesToAddress([]byte("coinbase")),
+		Coinbase:    common.BytesToAddress([]byte("coinbase")),
 		GasLimit:    kernel.MaxUint64,
 		BlockNumber: new(big.Int),
 		Time:        big.NewInt(time.Now().Unix()),
@@ -56,7 +57,7 @@ func CreateVMDefaultConfig() kernel.Config {
 
 }
 
-func CreateExecuteRuntime(caller kernel.Address, db kernel.StateDB) *kernel.EVM {
+func CreateExecuteRuntime(caller common.Address, db kernel.StateDB) *kernel.EVM {
 	context := CreateExecuteContext(caller)
 	stateDB := db
 	chainConfig := CreateChainConfig()

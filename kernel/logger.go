@@ -18,6 +18,7 @@ package kernel
 
 import (
 	"encoding/hex"
+	"evm/common"
 	"fmt"
 	"io"
 	"math/big"
@@ -25,7 +26,7 @@ import (
 )
 
 // Storage represents a contract's storage.
-type Storage map[Hash]Hash
+type Storage map[common.Hash]common.Hash
 
 // Copy duplicates the current storage.
 func (s Storage) Copy() Storage {
@@ -51,16 +52,16 @@ type LogConfig struct {
 // StructLog is emitted to the EVM each cycle and lists information about the current internal state
 // prior to the execution of the statement.
 type StructLog struct {
-	Pc         uint64        `json:"pc"`
-	Op         OpCode        `json:"op"`
-	Gas        uint64        `json:"gas"`
-	GasCost    uint64        `json:"gasCost"`
-	Memory     []byte        `json:"memory"`
-	MemorySize int           `json:"memSize"`
-	Stack      []*big.Int    `json:"stack"`
-	Storage    map[Hash]Hash `json:"-"`
-	Depth      int           `json:"depth"`
-	Err        error         `json:"-"`
+	Pc         uint64                      `json:"pc"`
+	Op         OpCode                      `json:"op"`
+	Gas        uint64                      `json:"gas"`
+	GasCost    uint64                      `json:"gasCost"`
+	Memory     []byte                      `json:"memory"`
+	MemorySize int                         `json:"memSize"`
+	Stack      []*big.Int                  `json:"stack"`
+	Storage    map[common.Hash]common.Hash `json:"-"`
+	Depth      int                         `json:"depth"`
+	Err        error                       `json:"-"`
 }
 
 // overrides for gencodec
@@ -68,7 +69,7 @@ type structLogMarshaling struct {
 	Stack       []*HexOrDecimal256
 	Gas         HexOrDecimal64
 	GasCost     HexOrDecimal64
-	Memory      Bytes
+	Memory      common.Bytes
 	OpName      string `json:"opName"` // adds call to OpName() in MarshalJSON
 	ErrorString string `json:"error"`  // adds call to ErrorString() in MarshalJSON
 }
@@ -92,7 +93,7 @@ func (s *StructLog) ErrorString() string {
 // Note that reference types are actual VM data structures; make copies
 // if you need to retain them beyond the current call.
 type Tracer interface {
-	CaptureStart(from Address, to Address, call bool, input []byte, gas uint64, value *big.Int) error
+	CaptureStart(from common.Address, to common.Address, call bool, input []byte, gas uint64, value *big.Int) error
 	CaptureState(env *EVM, pc uint64, op OpCode, gas, cost uint64, memory *Memory, stack *Stack, contract *Contract, depth int, err error) error
 	CaptureFault(env *EVM, pc uint64, op OpCode, gas, cost uint64, memory *Memory, stack *Stack, contract *Contract, depth int, err error) error
 	CaptureEnd(output []byte, gasUsed uint64, t time.Duration, err error) error
@@ -107,7 +108,7 @@ type StructLogger struct {
 	cfg LogConfig
 
 	logs          []StructLog
-	changedValues map[Address]Storage
+	changedValues map[common.Address]Storage
 	output        []byte
 	err           error
 }
@@ -115,7 +116,7 @@ type StructLogger struct {
 // NewStructLogger returns a new logger
 func NewStructLogger(cfg *LogConfig) *StructLogger {
 	logger := &StructLogger{
-		changedValues: make(map[Address]Storage),
+		changedValues: make(map[common.Address]Storage),
 	}
 	if cfg != nil {
 		logger.cfg = *cfg
@@ -124,7 +125,7 @@ func NewStructLogger(cfg *LogConfig) *StructLogger {
 }
 
 // CaptureStart implements the Tracer interface to initialize the tracing operation.
-func (l *StructLogger) CaptureStart(from Address, to Address, create bool, input []byte, gas uint64, value *big.Int) error {
+func (l *StructLogger) CaptureStart(from common.Address, to common.Address, create bool, input []byte, gas uint64, value *big.Int) error {
 	return nil
 }
 
@@ -147,8 +148,8 @@ func (l *StructLogger) CaptureState(env *EVM, pc uint64, op OpCode, gas, cost ui
 	// it in the local storage container.
 	if op == SSTORE && stack.len() >= 2 {
 		var (
-			value   = BigToHash(stack.data[stack.len()-2])
-			address = BigToHash(stack.data[stack.len()-1])
+			value   = common.BigToHash(stack.data[stack.len()-2])
+			address = common.BigToHash(stack.data[stack.len()-1])
 		)
 		l.changedValues[contract.Address()][address] = value
 	}

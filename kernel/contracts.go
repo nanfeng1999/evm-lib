@@ -19,6 +19,7 @@ package kernel
 import (
 	"crypto/sha256"
 	"errors"
+	"evm/common"
 	"math/big"
 
 	"evm/crypto"
@@ -36,24 +37,24 @@ type PrecompiledContract interface {
 
 // PrecompiledContractsHomestead contains the default set of pre-compiled Ethereum
 // contracts used in the Frontier and Homestead releases.
-var PrecompiledContractsHomestead = map[Address]PrecompiledContract{
-	BytesToAddress([]byte{1}): &ecrecover{},
-	BytesToAddress([]byte{2}): &sha256hash{},
-	BytesToAddress([]byte{3}): &ripemd160hash{},
-	BytesToAddress([]byte{4}): &dataCopy{},
+var PrecompiledContractsHomestead = map[common.Address]PrecompiledContract{
+	common.BytesToAddress([]byte{1}): &ecrecover{},
+	common.BytesToAddress([]byte{2}): &sha256hash{},
+	common.BytesToAddress([]byte{3}): &ripemd160hash{},
+	common.BytesToAddress([]byte{4}): &dataCopy{},
 }
 
 // PrecompiledContractsByzantium contains the default set of pre-compiled Ethereum
 // contracts used in the Byzantium release.
-var PrecompiledContractsByzantium = map[Address]PrecompiledContract{
-	BytesToAddress([]byte{1}): &ecrecover{},
-	BytesToAddress([]byte{2}): &sha256hash{},
-	BytesToAddress([]byte{3}): &ripemd160hash{},
-	BytesToAddress([]byte{4}): &dataCopy{},
-	BytesToAddress([]byte{5}): &bigModExp{},
-	BytesToAddress([]byte{6}): &bn256Add{},
-	BytesToAddress([]byte{7}): &bn256ScalarMul{},
-	BytesToAddress([]byte{8}): &bn256Pairing{},
+var PrecompiledContractsByzantium = map[common.Address]PrecompiledContract{
+	common.BytesToAddress([]byte{1}): &ecrecover{},
+	common.BytesToAddress([]byte{2}): &sha256hash{},
+	common.BytesToAddress([]byte{3}): &ripemd160hash{},
+	common.BytesToAddress([]byte{4}): &dataCopy{},
+	common.BytesToAddress([]byte{5}): &bigModExp{},
+	common.BytesToAddress([]byte{6}): &bn256Add{},
+	common.BytesToAddress([]byte{7}): &bn256ScalarMul{},
+	common.BytesToAddress([]byte{8}): &bn256Pairing{},
 }
 
 // RunPrecompiledContract runs and evaluates the output of a precompiled contract.
@@ -75,7 +76,7 @@ func (c *ecrecover) RequiredGas(input []byte) uint64 {
 func (c *ecrecover) Run(input []byte) ([]byte, error) {
 	const ecRecoverInputLength = 128
 
-	input = RightPadBytes(input, ecRecoverInputLength)
+	input = common.RightPadBytes(input, ecRecoverInputLength)
 	// "input" is (hash, v, r, s), each 32 bytes
 	// but for ecrecover we want (r, s, v)
 
@@ -95,7 +96,7 @@ func (c *ecrecover) Run(input []byte) ([]byte, error) {
 	}
 
 	// the first byte of pubkey is bitcoin heritage
-	return LeftPadBytes(Keccak256(pubKey[1:])[12:], 32), nil
+	return common.LeftPadBytes(Keccak256(pubKey[1:])[12:], 32), nil
 }
 
 // SHA256 implemented as a native contract.
@@ -126,7 +127,7 @@ func (c *ripemd160hash) RequiredGas(input []byte) uint64 {
 func (c *ripemd160hash) Run(input []byte) ([]byte, error) {
 	ripemd := ripemd160.New()
 	ripemd.Write(input)
-	return LeftPadBytes(ripemd.Sum(nil), 32), nil
+	return common.LeftPadBytes(ripemd.Sum(nil), 32), nil
 }
 
 // data copy implemented as a native contract.
@@ -243,9 +244,9 @@ func (c *bigModExp) Run(input []byte) ([]byte, error) {
 	)
 	if mod.BitLen() == 0 {
 		// Modulo 0 is undefined, return zero
-		return LeftPadBytes([]byte{}, int(modLen)), nil
+		return common.LeftPadBytes([]byte{}, int(modLen)), nil
 	}
-	return LeftPadBytes(base.Exp(base, exp, mod).Bytes(), int(modLen)), nil
+	return common.LeftPadBytes(base.Exp(base, exp, mod).Bytes(), int(modLen)), nil
 }
 
 // newCurvePoint unmarshals a binary blob into a bn256 elliptic curve point,

@@ -8,21 +8,22 @@
 package kernel
 
 import (
+	"evm/abi"
+	"evm/common"
 	"evm/crypto"
-	"github.com/ethereum/go-ethereum/accounts/abi"
 	"math/big"
 )
 
 type StateObject interface {
-	GetState(key Hash) Hash
-	SetState(key, value Hash)
+	GetState(key common.Hash) common.Hash
+	SetState(key, value common.Hash)
 	AddBalance(amount *big.Int)
 	SubBalance(amount *big.Int)
 	SetBalance(amount *big.Int)
-	Address() Address
+	Address() common.Address
 	Nonce() uint64
 	SetNonce(nonce uint64)
-	CodeHash() Hash
+	CodeHash() common.Hash
 	SnapShot()
 	RevertToSnap(pre int)
 	RevertToInit()
@@ -30,8 +31,8 @@ type StateObject interface {
 
 type stateObject struct {
 	abi           *abi.ABI            // 智能合约二进制文件接口
-	address       Address             // 账户地址
-	addrHash      Hash                // 账户地址哈希
+	address       common.Address      // 账户地址
+	addrHash      common.Hash         // 账户地址哈希
 	data          Account             // 账户结构体
 	code          []byte              // 智能合约代码字节数组
 	originStorage Storage             // 存储某个账户执行合约过程中的临时状态信息
@@ -44,7 +45,7 @@ var _ StateObject = (*stateObject)(nil)
 
 var emptyHash = crypto.Keccak256(nil)
 
-func newStateObject(addr Address, account Account) *stateObject {
+func newStateObject(addr common.Address, account Account) *stateObject {
 	if account.Balance == nil {
 		account.SetBalance(new(big.Int))
 	}
@@ -52,27 +53,27 @@ func newStateObject(addr Address, account Account) *stateObject {
 		account.CodeHash = emptyHash
 	}
 	return &stateObject{
-		address:       addr,                                // 账户地址
-		addrHash:      Hash(crypto.Keccak256Hash(addr[:])), // 账户地址哈希
-		data:          account,                             // 账户结构体
-		originStorage: make(map[Hash]Hash),                 //存储某个账户执行合约过程中的临时状态信息
+		address:       addr,                                       // 账户地址
+		addrHash:      common.Hash(crypto.Keccak256Hash(addr[:])), // 账户地址哈希
+		data:          account,                                    // 账户结构体
+		originStorage: make(map[common.Hash]common.Hash),          //存储某个账户执行合约过程中的临时状态信息
 		version:       -1,
 	}
 }
 
-func (obj *stateObject) isExist(key Hash) bool {
+func (obj *stateObject) isExist(key common.Hash) bool {
 	_, ok := obj.originStorage[key]
 	return ok
 }
 
-func (obj *stateObject) GetState(key Hash) Hash {
+func (obj *stateObject) GetState(key common.Hash) common.Hash {
 	if obj.isExist(key) {
 		return obj.originStorage[key]
 	}
-	return Hash{}
+	return common.Hash{}
 }
 
-func (obj *stateObject) SetState(key, value Hash) {
+func (obj *stateObject) SetState(key, value common.Hash) {
 	obj.originStorage[key] = value
 }
 
@@ -94,7 +95,7 @@ func (obj *stateObject) SetBalance(amount *big.Int) {
 	obj.data.Balance = amount
 }
 
-func (obj *stateObject) Address() Address {
+func (obj *stateObject) Address() common.Address {
 	return obj.address
 }
 
@@ -106,14 +107,14 @@ func (obj *stateObject) SetNonce(nonce uint64) {
 	obj.data.Nonce = nonce
 }
 
-func (obj *stateObject) CodeHash() Hash {
-	return BytesToHash(obj.data.CodeHash)
+func (obj *stateObject) CodeHash() common.Hash {
+	return common.BytesToHash(obj.data.CodeHash)
 }
 
 func (obj *stateObject) SnapShot() {
 	obj.version++
 	if checkVersion(obj.version) {
-		obj.dirtyStorage[obj.version] = make(map[Hash]Hash)
+		obj.dirtyStorage[obj.version] = make(map[common.Hash]common.Hash)
 		obj.dirtyStorage[obj.version] = obj.originStorage.Copy()
 	}
 }

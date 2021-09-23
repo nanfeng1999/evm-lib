@@ -16,6 +16,8 @@
 
 package kernel
 
+import "evm/common"
+
 // GasTable organizes gas prices for different ethereum phases.
 type GasTable struct {
 	ExtcodeSize uint64
@@ -131,16 +133,16 @@ func gasReturnDataCopy(gt GasTable, evm *EVM, contract *Contract, stack *Stack, 
 func gasSStore(gt GasTable, evm *EVM, contract *Contract, stack *Stack, mem *Memory, memorySize uint64) (uint64, error) {
 	var (
 		y, x = stack.Back(1), stack.Back(0)
-		val  = evm.StateDBHandler.GetState(contract.Address(), BigToHash(x))
+		val  = evm.StateDBHandler.GetState(contract.Address(), common.BigToHash(x))
 	)
 	// This checks for 3 scenario's and calculates gas accordingly
 	// 1. From a zero-value address to a non-zero value         (NEW VALUE)
 	// 2. From a non-zero value address to a zero-value address (DELETE)
 	// 3. From a non-zero to a non-zero                         (CHANGE)
-	if val == (Hash{}) && y.Sign() != 0 {
+	if val == (common.Hash{}) && y.Sign() != 0 {
 		// 0 => non 0
 		return SstoreSetGas, nil
-	} else if val != (Hash{}) && y.Sign() == 0 {
+	} else if val != (common.Hash{}) && y.Sign() == 0 {
 		// non 0 => 0
 		evm.StateDBHandler.AddRefund(SstoreRefundGas)
 		return SstoreClearGas, nil
@@ -331,7 +333,7 @@ func gasCall(gt GasTable, evm *EVM, contract *Contract, stack *Stack, mem *Memor
 	var (
 		gas            = gt.Calls
 		transfersValue = stack.Back(2).Sign() != 0
-		address        = BigToAddress(stack.Back(1))
+		address        = common.BigToAddress(stack.Back(1))
 		eip158         = evm.ChainConfig().IsEIP158(evm.BlockNumber)
 	)
 	if eip158 {
@@ -401,7 +403,7 @@ func gasSuicide(gt GasTable, evm *EVM, contract *Contract, stack *Stack, mem *Me
 	if evm.ChainConfig().IsEIP150(evm.BlockNumber) {
 		gas = gt.Suicide
 		var (
-			address = BigToAddress(stack.Back(0))
+			address = common.BigToAddress(stack.Back(0))
 			eip158  = evm.ChainConfig().IsEIP158(evm.BlockNumber)
 		)
 

@@ -17,6 +17,7 @@
 package kernel
 
 import (
+	"evm/common"
 	"math/big"
 )
 
@@ -40,7 +41,7 @@ func getData(data []byte, start uint64, size uint64) []byte {
 	if end > length {
 		end = length
 	}
-	return RightPadBytes(data[start:end], int(size))
+	return common.RightPadBytes(data[start:end], int(size))
 }
 
 // getDataBig returns a slice from the data based on the start and size and pads
@@ -50,7 +51,7 @@ func getDataBig(data []byte, start *big.Int, size *big.Int) []byte {
 
 	s := BigMin(start, dlen)
 	e := BigMin(new(big.Int).Add(s, size), dlen)
-	return RightPadBytes(data[s.Uint64():e.Uint64()], int(size.Uint64()))
+	return common.RightPadBytes(data[s.Uint64():e.Uint64()], int(size.Uint64()))
 }
 
 // bigUint64 returns the integer casted to a uint64 and returns whether it

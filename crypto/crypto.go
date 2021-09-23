@@ -23,17 +23,16 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"evm/common"
+	"evm/common/math"
+	"evm/rlp"
 	"fmt"
+	"golang.org/x/crypto/sha3"
 	"hash"
 	"io"
 	"io/ioutil"
 	"math/big"
 	"os"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/rlp"
-	"golang.org/x/crypto/sha3"
 )
 
 //SignatureLength indicates the byte length required to carry a signature with recovery id.

@@ -9,10 +9,11 @@ package mongodb
 
 import (
 	"errors"
+	"evm/common"
 	"evm/kernel"
+	"evm/rlp"
 	"fmt"
 	"github.com/JodeZer/mgop"
-	"github.com/ethereum/go-ethereum/rlp"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -72,9 +73,9 @@ func GetAccountAddr(name string) (string, error) {
 	}
 }
 
-func createAddress(acc *Account) kernel.Address {
+func createAddress(acc *Account) common.Address {
 	data, _ := rlp.EncodeToBytes(acc)
-	return kernel.BytesToAddress(kernel.Keccak256(data)[12:])
+	return common.BytesToAddress(kernel.Keccak256(data)[12:])
 }
 
 func GetAccount(name string) *Account {

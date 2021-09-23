@@ -22,6 +22,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"evm/common"
 	"evm/crypto"
 	"evm/crypto/sha3"
 	"fmt"
@@ -49,7 +50,7 @@ func Keccak256(data ...[]byte) []byte {
 
 // Keccak256Hash calculates and returns the Keccak256 hash of the input data,
 // converting it to an internal Hash data structure.
-func Keccak256Hash(data ...[]byte) (h Hash) {
+func Keccak256Hash(data ...[]byte) (h common.Hash) {
 	d := sha3.NewKeccak256()
 	for _, b := range data {
 		d.Write(b)
@@ -185,7 +186,7 @@ func ValidateSignatureValues(v byte, r, s *big.Int, homestead bool) bool {
 	return r.Cmp(secp256k1N) < 0 && s.Cmp(secp256k1N) < 0 && (v == 0 || v == 1)
 }
 
-func PubkeyToAddress(p ecdsa.PublicKey) Address {
+func PubkeyToAddress(p ecdsa.PublicKey) common.Address {
 	pubBytes := FromECDSAPub(&p)
-	return BytesToAddress(Keccak256(pubBytes[1:])[12:])
+	return common.BytesToAddress(Keccak256(pubBytes[1:])[12:])
 }

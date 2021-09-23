@@ -1,52 +1,53 @@
 package kernel
 
 import (
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	"evm/abi"
+	"evm/common"
 	"math/big"
 )
 
 // StateDB is an EVM database for full state querying.
 type StateDB interface {
-	CreateAccount(Address)
+	CreateAccount(common.Address)
 
-	SetABI(Address, *abi.ABI)
-	GetABI(Address) *abi.ABI
+	SetABI(common.Address, *abi.ABI)
+	GetABI(common.Address) *abi.ABI
 
-	SubBalance(Address, *big.Int)
-	AddBalance(Address, *big.Int)
-	GetBalance(Address) *big.Int
+	SubBalance(common.Address, *big.Int)
+	AddBalance(common.Address, *big.Int)
+	GetBalance(common.Address) *big.Int
 
-	GetNonce(Address) uint64
-	SetNonce(Address, uint64)
+	GetNonce(common.Address) uint64
+	SetNonce(common.Address, uint64)
 
-	GetCodeHash(Address) Hash
-	GetCode(Address) []byte
-	SetCode(Address, []byte)
-	GetCodeSize(Address) int
+	GetCodeHash(common.Address) common.Hash
+	GetCode(common.Address) []byte
+	SetCode(common.Address, []byte)
+	GetCodeSize(common.Address) int
 
 	AddRefund(uint64)
 	GetRefund() uint64
 
-	GetState(Address, Hash) Hash
-	SetState(Address, Hash, Hash)
+	GetState(common.Address, common.Hash) common.Hash
+	SetState(common.Address, common.Hash, common.Hash)
 
-	Suicide(Address) bool
-	HasSuicided(Address) bool
+	Suicide(common.Address) bool
+	HasSuicided(common.Address) bool
 
-	Exist(Address) bool
-	Empty(Address) bool
+	Exist(common.Address) bool
+	Empty(common.Address) bool
 
 	RevertToSnapshot(int)
 	Snapshot() int
 
-	HaveSufficientBalance(Address, *big.Int) bool
-	TransferBalance(Address, Address, *big.Int)
+	HaveSufficientBalance(common.Address, *big.Int) bool
+	TransferBalance(common.Address, common.Address, *big.Int)
 
 	AddLog(*Log)
-	AddPreimage(Hash, []byte)
-	ForEachStorage(Address, func(Hash, Hash) bool)
+	AddPreimage(common.Hash, []byte)
+	ForEachStorage(common.Address, func(common.Hash, common.Hash) bool)
 }
 
 type AddressHandler interface {
-	CreateAddress(b Address, nonce uint64) Address
+	CreateAddress(b common.Address, nonce uint64) common.Address
 }

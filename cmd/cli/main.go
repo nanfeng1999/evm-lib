@@ -10,7 +10,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"evm/kernel"
+	"evm/common"
 	"fmt"
 
 	"github.com/peterh/liner"
@@ -52,7 +52,7 @@ type Request struct {
 }
 
 type ContactInfo struct {
-	Addr kernel.Address
+	Addr common.Address
 	Abi  []byte
 	Bin  []byte
 }
@@ -218,7 +218,7 @@ func addContact(c *cli.Context) error {
 	}
 	addr := c.String("address")
 	contact := ContactInfo{
-		Addr: kernel.HexToAddress(addr),
+		Addr: common.HexToAddress(addr),
 		Abi:  abiData,
 		Bin:  binData,
 	}

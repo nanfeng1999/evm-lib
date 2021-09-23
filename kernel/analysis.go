@@ -17,16 +17,17 @@
 package kernel
 
 import (
+	"evm/common"
 	"math/big"
 )
 
 // destinations stores one map per contract (keyed by hash of code).
 // The maps contain an entry for each location of a JUMPDEST
 // instruction.
-type destinations map[Hash]bitvec
+type destinations map[common.Hash]bitvec
 
 // has checks whether code has a JUMPDEST at dest.
-func (d destinations) has(codehash Hash, code []byte, dest *big.Int) bool {
+func (d destinations) has(codehash common.Hash, code []byte, dest *big.Int) bool {
 	// PC cannot go beyond len(code) and certainly can't be bigger than 63bits.
 	// Don't bother checking for JUMPDEST in that case.
 	udest := dest.Uint64()

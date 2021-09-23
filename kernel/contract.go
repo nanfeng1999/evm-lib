@@ -17,14 +17,15 @@
 package kernel
 
 import (
-	"github.com/ethereum/go-ethereum/rlp"
+	"evm/common"
+	"evm/rlp"
 	"math/big"
 )
 
 // ContractRef is a reference to the contract's backing object
 type ContractRef interface {
-	Address() Address
-	CreateContractAddress(b Address, nonce uint64) Address
+	Address() common.Address
+	CreateContractAddress(b common.Address, nonce uint64) common.Address
 }
 
 // AccountRef implements ContractRef.
@@ -34,13 +35,13 @@ type ContractRef interface {
 // proves difficult because of the cached jump destinations which
 // are fetched from the parent contract (i.e. the caller), which
 // is a ContractRef.
-type AccountRef Address
+type AccountRef common.Address
 
 // Address casts AccountRef to a Address
-func (ar AccountRef) Address() Address { return (Address)(ar) }
-func (ar AccountRef) CreateContractAddress(b Address, nonce uint64) Address {
+func (ar AccountRef) Address() common.Address { return (common.Address)(ar) }
+func (ar AccountRef) CreateContractAddress(b common.Address, nonce uint64) common.Address {
 	data, _ := rlp.EncodeToBytes([]interface{}{b, nonce})
-	return BytesToAddress(Keccak256(data)[12:])
+	return common.BytesToAddress(Keccak256(data)[12:])
 }
 
 // Contract represents an ethereum contract in the state database. It contains
@@ -49,14 +50,14 @@ type Contract struct {
 	// CallerAddress is the result of the caller which initialised this
 	// contract. However when the "call method" is delegated this value
 	// needs to be initialised to that of the caller's caller.
-	CallerAddress Address
+	CallerAddress common.Address
 	caller        ContractRef
 	self          ContractRef
 	jumpdests     destinations // result of JUMPDEST analysis.
 
 	Code           []byte
-	CodeHash       Hash
-	CodeAddr       *Address
+	CodeHash       common.Hash
+	CodeAddr       *common.Address
 	Input          []byte
 	Gas            uint64
 	value          *big.Int
@@ -116,7 +117,7 @@ func (c *Contract) GetByte(n uint64) byte {
 //
 // Caller will recursively call caller when the contract is a delegate
 // call, including that of caller's caller.
-func (c *Contract) Caller() Address {
+func (c *Contract) Caller() common.Address {
 	return c.CallerAddress
 }
 
@@ -130,7 +131,7 @@ func (c *Contract) UseGas(gas uint64) (ok bool) {
 }
 
 // Address returns the contracts address
-func (c *Contract) Address() Address {
+func (c *Contract) Address() common.Address {
 	return c.self.Address()
 }
 
@@ -140,19 +141,19 @@ func (c *Contract) Value() *big.Int {
 }
 
 // SetCode sets the code to the contract
-func (c *Contract) SetCode(hash Hash, code []byte) {
+func (c *Contract) SetCode(hash common.Hash, code []byte) {
 	c.Code = code
 	c.CodeHash = hash
 }
 
 // SetCallCode sets the code of the contract and address of the backing data
 // object
-func (c *Contract) SetCallCode(addr *Address, hash Hash, code []byte) {
+func (c *Contract) SetCallCode(addr *common.Address, hash common.Hash, code []byte) {
 	c.Code = code
 	c.CodeHash = hash
 	c.CodeAddr = addr
 }
-func (c *Contract) CreateContractAddress(b Address, nonce uint64) Address {
+func (c *Contract) CreateContractAddress(b common.Address, nonce uint64) common.Address {
 	data, _ := rlp.EncodeToBytes([]interface{}{b, nonce})
-	return BytesToAddress(Keccak256(data)[12:])
+	return common.BytesToAddress(Keccak256(data)[12:])
 }
