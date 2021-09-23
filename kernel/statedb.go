@@ -36,13 +36,19 @@ func MakeNewStateDB(db DB) StateDB {
 func (s *MStateDB) createObject(addr common.Address) *stateObject {
 	obj := newStateObject(addr, Account{})
 	s.stateObjects[addr] = obj
-	bytes, _ := rlp.EncodeToBytes(obj)
-	_ = s.DB.SaveToDB(addr, bytes)
 	return obj
 }
 
 func (s *MStateDB) CreateAccount(addr common.Address) {
 	s.createObject(addr)
+}
+
+func (s *MStateDB) GetStateObject(addr common.Address) *stateObject {
+	return s.getStateObject(addr)
+}
+
+func (s *MStateDB) ResetStateObject(addr common.Address) {
+	s.stateObjects[addr] = nil
 }
 
 func (s *MStateDB) SetABI(addr common.Address, abi *abi.ABI) {

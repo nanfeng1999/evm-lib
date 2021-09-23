@@ -10,6 +10,9 @@ import (
 type StateDB interface {
 	CreateAccount(common.Address)
 
+	GetStateObject(common.Address) *stateObject
+	ResetStateObject(common.Address)
+
 	SetABI(common.Address, *abi.ABI)
 	GetABI(common.Address) *abi.ABI
 
