@@ -1,6 +1,6 @@
 package kernel
 
-import "evm/common"
+import "github.com/yzy-github/evm-lib/common"
 
 type ETHChainHandler struct{}
 

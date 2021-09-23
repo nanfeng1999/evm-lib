@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"io"
 
-	"evm/common"
-	"evm/crypto"
+	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/crypto"
 )
 
 // The ABI holds information about a contract's context and available

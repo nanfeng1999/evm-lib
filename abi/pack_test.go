@@ -27,7 +27,7 @@ import (
 	"strings"
 	"testing"
 
-	"evm/common"
+	"github.com/yzy-github/evm-lib/common"
 )
 
 // TestPack tests the general pack/unpack tests in packing_test.go

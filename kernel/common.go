@@ -17,7 +17,7 @@
 package kernel
 
 import (
-	"evm/common"
+	"github.com/yzy-github/evm-lib/common"
 	"math/big"
 )
 

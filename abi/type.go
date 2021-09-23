@@ -24,7 +24,7 @@ import (
 	"strconv"
 	"strings"
 
-	"evm/common"
+	"github.com/yzy-github/evm-lib/common"
 )
 
 // Type enumerator

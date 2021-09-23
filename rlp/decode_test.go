@@ -27,7 +27,7 @@ import (
 	"strings"
 	"testing"
 
-	"evm/common/math"
+	"github.com/yzy-github/evm-lib/common/math"
 )
 
 func TestStreamKind(t *testing.T) {

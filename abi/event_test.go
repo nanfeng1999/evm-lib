@@ -25,10 +25,10 @@ import (
 	"strings"
 	"testing"
 
-	"evm/common"
-	"evm/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/crypto"
 )
 
 var jsonEventTransfer = []byte(`{

@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"testing"
 
-	"evm/common"
+	"github.com/yzy-github/evm-lib/common"
 )
 
 func TestHexOrDecimal256(t *testing.T) {

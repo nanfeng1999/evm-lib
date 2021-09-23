@@ -20,7 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"evm/common/hexutil"
+	"github.com/yzy-github/evm-lib/common/hexutil"
 )
 
 type MyType [5]byte

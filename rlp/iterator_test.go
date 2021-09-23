@@ -19,7 +19,7 @@ package rlp
 import (
 	"testing"
 
-	"evm/common/hexutil"
+	"github.com/yzy-github/evm-lib/common/hexutil"
 )
 
 // TestIterator tests some basic things about the ListIterator. A more

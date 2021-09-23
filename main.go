@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"evm/abi"
-	"evm/common"
-	"evm/kernel"
-	"evm/runtime"
 	"fmt"
+	"github.com/yzy-github/evm-lib/abi"
+	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/kernel"
+	"github.com/yzy-github/evm-lib/runtime"
 	"io/ioutil"
 	"math/big"
 	"os"

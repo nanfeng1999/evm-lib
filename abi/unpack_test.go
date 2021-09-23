@@ -26,8 +26,8 @@ import (
 	"strings"
 	"testing"
 
-	"evm/common"
 	"github.com/stretchr/testify/require"
+	"github.com/yzy-github/evm-lib/common"
 )
 
 // TestUnpack tests the general pack/unpack tests in packing_test.go

@@ -22,9 +22,9 @@ import (
 	"reflect"
 	"testing"
 
-	"evm/common"
-	"evm/common/hexutil"
-	"evm/common/math"
+	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/common/hexutil"
+	"github.com/yzy-github/evm-lib/common/math"
 )
 
 var (

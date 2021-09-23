@@ -21,8 +21,8 @@ import (
 	"reflect"
 	"testing"
 
-	"evm/common"
-	"evm/crypto"
+	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/crypto"
 )
 
 func TestMakeTopics(t *testing.T) {

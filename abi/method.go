@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"strings"
 
-	"evm/crypto"
+	"github.com/yzy-github/evm-lib/crypto"
 )
 
 // FunctionType represents different types of functions a contract might have.

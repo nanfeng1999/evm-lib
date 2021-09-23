@@ -27,7 +27,7 @@ import (
 	"sync"
 	"testing"
 
-	"evm/common/math"
+	"github.com/yzy-github/evm-lib/common/math"
 )
 
 type testEncoder struct {

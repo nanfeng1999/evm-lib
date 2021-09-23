@@ -19,7 +19,7 @@ package kernel
 import (
 	"errors"
 	"math/big"
-	//"evm/params"
+	//"github.com/yzy-github/evm-lib/params"
 )
 
 type (

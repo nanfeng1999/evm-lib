@@ -1,8 +1,8 @@
 package kernel
 
 import (
-	"evm/common"
 	"fmt"
+	"github.com/yzy-github/evm-lib/common"
 	"math/big"
 )
 

@@ -23,8 +23,8 @@ import (
 	"crypto/elliptic"
 	"fmt"
 
-	"evm/common/math"
-	"evm/crypto/secp256k1"
+	"github.com/yzy-github/evm-lib/common/math"
+	"github.com/yzy-github/evm-lib/crypto/secp256k1"
 )
 
 // Ecrecover returns the uncompressed public key that created the given signature.

@@ -16,7 +16,7 @@
 
 package kernel
 
-import "evm/common"
+import "github.com/yzy-github/evm-lib/common"
 
 // GasTable organizes gas prices for different ethereum phases.
 type GasTable struct {

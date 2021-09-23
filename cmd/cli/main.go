@@ -10,8 +10,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"evm/common"
 	"fmt"
+	"github.com/yzy-github/evm-lib/common"
 
 	"github.com/peterh/liner"
 	"github.com/urfave/cli/v2"

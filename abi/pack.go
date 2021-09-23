@@ -22,8 +22,8 @@ import (
 	"math/big"
 	"reflect"
 
-	"evm/common"
-	"evm/common/math"
+	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/common/math"
 )
 
 // packBytesSlice packs the given bytes as [L, V] as the canonical representation

@@ -1,4 +1,4 @@
-module evm
+module github.com/yzy-github/evm-lib
 
 go 1.16
 

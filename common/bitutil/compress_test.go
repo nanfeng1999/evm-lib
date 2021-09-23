@@ -21,7 +21,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"evm/common/hexutil"
+	"github.com/yzy-github/evm-lib/common/hexutil"
 )
 
 // Tests that data bitset encoding and decoding works and is bijective.

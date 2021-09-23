@@ -8,9 +8,9 @@
 package kernel
 
 import (
-	"evm/abi"
-	"evm/common"
-	"evm/crypto"
+	"github.com/yzy-github/evm-lib/abi"
+	"github.com/yzy-github/evm-lib/common"
+	"github.com/yzy-github/evm-lib/crypto"
 	"math/big"
 )
 

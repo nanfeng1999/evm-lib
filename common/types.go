@@ -25,7 +25,7 @@ import (
 	"reflect"
 	"strings"
 
-	"evm/crypto/sha3"
+	"github.com/yzy-github/evm-lib/crypto/sha3"
 )
 
 // Lengths of hashes and addresses in bytes.

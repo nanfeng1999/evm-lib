@@ -16,7 +16,7 @@
 
 package kernel
 
-import "evm/common"
+import "github.com/yzy-github/evm-lib/common"
 
 //go:generate gencodec -type Log -field-override logMarshaling -out gen_log_json.go
 
