@@ -5,9 +5,11 @@
  * @Date: 2021/8/19 15:26
  * @Copyright: MIN-Group；国家重大科技基础设施——未来网络北大实验室；深圳市信息论与未来网络重点实验室
  */
+
 package kernel
 
 import (
+	"encoding/json"
 	"github.com/yzy-github/evm-lib/abi"
 	"github.com/yzy-github/evm-lib/common"
 	"github.com/yzy-github/evm-lib/crypto"
@@ -30,14 +32,14 @@ type StateObject interface {
 }
 
 type stateObject struct {
-	abi           *abi.ABI            // 智能合约二进制文件接口
-	address       common.Address      // 账户地址
-	addrHash      common.Hash         // 账户地址哈希
-	data          Account             // 账户结构体
-	code          []byte              // 智能合约代码字节数组
-	originStorage Storage             // 存储某个账户执行合约过程中的临时状态信息
-	dirtyStorage  [maxSnapNum]Storage // 存储某个账户执行合约过程中之前的状态信息
-	version       int                 // 回退版本号
+	abi           *abi.ABI
+	address       common.Address
+	addrHash      common.Hash
+	data          Account
+	code          []byte
+	originStorage Storage
+	dirtyStorage  [maxSnapNum]Storage
+	version       int
 }
 
 // 检测结构体是否已经实现接口
@@ -131,6 +133,51 @@ func (obj *stateObject) RevertToSnap(pre int) {
 
 func (obj *stateObject) RevertToInit() {
 	obj.RevertToSnap(0)
+}
+
+func (obj *stateObject) MarshalJSON() ([]byte, error) {
+
+	dataBytes, _ := json.Marshal(&obj.data)
+	abiBytes, _ := json.Marshal(obj.abi)
+
+	var stateObjectJson = StateObjectJson{
+		ABI:      abiBytes,
+		Address:  obj.address.Bytes(),
+		AddrHash: obj.addrHash.Bytes(),
+		Data:     dataBytes,
+		Code:     obj.code,
+	}
+
+	return stateObjectJson.ToByteArray()
+
+}
+
+func (obj *stateObject) UnmarshalJSON(data []byte) error {
+	var stateObjectJson StateObjectJson
+	err := stateObjectJson.FromByteArray(data)
+	if err != nil {
+		return err
+	}
+
+	var acc Account
+	err = json.Unmarshal(stateObjectJson.Data, &acc)
+	if err != nil {
+		return err
+	}
+
+	var abi abi.ABI
+	err = json.Unmarshal(stateObjectJson.ABI, &abi)
+	if err != nil {
+		return err
+	}
+
+	obj.data = acc
+	obj.abi = &abi
+	obj.address = common.BytesToAddress(stateObjectJson.Address)
+	obj.addrHash = common.BytesToHash(stateObjectJson.AddrHash)
+	obj.originStorage = make(map[common.Hash]common.Hash)
+
+	return nil
 }
 
 func checkVersion(version int) bool {
