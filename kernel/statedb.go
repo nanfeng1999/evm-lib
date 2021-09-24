@@ -25,7 +25,7 @@ type MStateDB struct {
 
 var _ StateDB = (*MStateDB)(nil)
 
-func MakeNewStateDB(db DB) StateDB {
+func MakeNewStateDB(db DB) *MStateDB {
 	statedb := new(MStateDB)
 	statedb.DB = db
 	statedb.stateObjects = make(map[common.Address]*stateObject)
