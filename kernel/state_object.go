@@ -135,12 +135,12 @@ func (obj *stateObject) RevertToInit() {
 	obj.RevertToSnap(0)
 }
 
-func (obj *stateObject) MarshalJSON() ([]byte, error) {
+func (obj *stateObject) ToByteArray() ([]byte, error) {
 
 	dataBytes, _ := json.Marshal(&obj.data)
 	abiBytes, _ := json.Marshal(obj.abi)
 
-	var stateObjectJson = StateObjectJson{
+	var stateObjectJson = &StateObjectJson{
 		ABI:      abiBytes,
 		Address:  obj.address.Bytes(),
 		AddrHash: obj.addrHash.Bytes(),
@@ -152,8 +152,8 @@ func (obj *stateObject) MarshalJSON() ([]byte, error) {
 
 }
 
-func (obj *stateObject) UnmarshalJSON(data []byte) error {
-	var stateObjectJson StateObjectJson
+func (obj *stateObject) FromByteArray(data []byte) error {
+	var stateObjectJson = new(StateObjectJson)
 	err := stateObjectJson.FromByteArray(data)
 	if err != nil {
 		return err

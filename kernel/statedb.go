@@ -2,10 +2,8 @@ package kernel
 
 import (
 	"errors"
-	"fmt"
 	"github.com/yzy-github/evm-lib/abi"
 	"github.com/yzy-github/evm-lib/common"
-	"github.com/yzy-github/evm-lib/rlp"
 	"math/big"
 )
 
@@ -48,7 +46,7 @@ func (s *MStateDB) GetStateObject(addr common.Address) *stateObject {
 }
 
 func (s *MStateDB) ResetStateObject(addr common.Address) {
-	s.stateObjects[addr] = nil
+	delete(s.stateObjects, addr)
 }
 
 func (s *MStateDB) SetABI(addr common.Address, abi *abi.ABI) {
@@ -71,12 +69,12 @@ func (s *MStateDB) setABI(addr common.Address, abi *abi.ABI) {
 }
 
 func (s *MStateDB) decodeToStateObject(bytes []byte) *stateObject {
-	var obj stateObject
-	err := rlp.DecodeBytes(bytes, obj)
+	var obj = new(stateObject)
+	err := obj.FromByteArray(bytes)
 	if err != nil {
 		return nil
 	}
-	return &obj
+	return obj
 }
 
 func (s *MStateDB) getStateObject(addr common.Address) *stateObject {
@@ -184,7 +182,6 @@ func (s *MStateDB) Empty(addr common.Address) bool {
 }
 
 func (s *MStateDB) RevertToSnapshot(pre int) {
-	fmt.Println("回退")
 	for _, obj := range s.stateObjects {
 		obj.RevertToSnap(pre)
 	}

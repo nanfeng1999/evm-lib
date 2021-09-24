@@ -15,7 +15,6 @@
 package kernel
 
 import (
-	"fmt"
 	"github.com/yzy-github/evm-lib/common"
 	"math/big"
 	"sync/atomic"
@@ -118,8 +117,9 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 	}
 
 	var (
-		to       = AccountRef(addr)
-		snapshot = evm.StateDBHandler.Snapshot()
+		to = AccountRef(addr)
+		// TODO 暂时取消快照
+		//snapshot = evm.StateDBHandler.Snapshot()
 	)
 	if !evm.StateDBHandler.Exist(addr) {
 		precompiles := PrecompiledContractsHomestead
@@ -159,7 +159,8 @@ func (evm *EVM) Call(caller ContractRef, addr common.Address, input []byte, gas 
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in homestead this also counts for code storage gas errors.
 	if err != nil {
-		evm.StateDBHandler.RevertToSnapshot(snapshot)
+		// TODO 暂时取消快照
+		//evm.StateDBHandler.RevertToSnapshot(snapshot)
 		if err != errExecutionReverted {
 			contract.UseGas(contract.Gas)
 		}
@@ -297,7 +298,6 @@ func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.I
 	}
 	// Ensure there's no existing contract already at the designated address
 	nonce := evm.StateDBHandler.GetNonce(caller.Address())
-	fmt.Println(caller.Address().Hex(), nonce)
 
 	evm.StateDBHandler.SetNonce(caller.Address(), nonce+1)
 
@@ -307,7 +307,8 @@ func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.I
 		return nil, common.Address{}, 0, ErrContractAddressCollision
 	}
 	// Create a new account on the state
-	snapshot := evm.StateDBHandler.Snapshot()
+	// TODO 暂时取消快照
+	// snapshot := evm.StateDBHandler.Snapshot()
 	evm.StateDBHandler.CreateAccount(contractAddr)
 	if evm.ChainConfig().IsEIP158(evm.BlockNumber) {
 		evm.StateDBHandler.SetNonce(contractAddr, 1)
@@ -350,7 +351,8 @@ func (evm *EVM) Create(caller ContractRef, code []byte, gas uint64, value *big.I
 	// above we revert to the snapshot and consume any gas remaining. Additionally
 	// when we're in homestead this also counts for code storage gas errors.
 	if maxCodeSizeExceeded || (err != nil && (evm.ChainConfig().IsHomestead(evm.BlockNumber) || err != ErrCodeStoreOutOfGas)) {
-		evm.StateDBHandler.RevertToSnapshot(snapshot)
+		// TODO 暂时取消快照
+		//evm.StateDBHandler.RevertToSnapshot(snapshot)
 		if err != errExecutionReverted {
 			contract.UseGas(contract.Gas)
 		}
