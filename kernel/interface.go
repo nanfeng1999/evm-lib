@@ -12,7 +12,7 @@ type StateDB interface {
 	GetStateObject(common.Address) *stateObject
 	ResetStateObject(common.Address)
 
-	SetABI(common.Address, *abi.ABI)
+	SetABI(common.Address, *abi.ABI, []byte)
 	GetABI(common.Address) *abi.ABI
 
 	SubBalance(common.Address, *big.Int)

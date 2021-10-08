@@ -10,6 +10,7 @@ package kernel
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/yzy-github/evm-lib/abi"
 	"github.com/yzy-github/evm-lib/common"
 	"github.com/yzy-github/evm-lib/crypto"
@@ -33,6 +34,7 @@ type StateObject interface {
 
 type stateObject struct {
 	abi           *abi.ABI
+	abiBytes      []byte
 	address       common.Address
 	addrHash      common.Hash
 	data          Account
@@ -138,14 +140,16 @@ func (obj *stateObject) RevertToInit() {
 func (obj *stateObject) ToByteArray() ([]byte, error) {
 
 	dataBytes, _ := json.Marshal(&obj.data)
-	abiBytes, _ := json.Marshal(obj.abi)
+
+	originStorageBytes, _ := json.Marshal(&obj.originStorage)
 
 	var stateObjectJson = &StateObjectJson{
-		ABI:      abiBytes,
+		ABI:      obj.abiBytes,
 		Address:  obj.address.Bytes(),
 		AddrHash: obj.addrHash.Bytes(),
 		Data:     dataBytes,
 		Code:     obj.code,
+		Origin:   originStorageBytes,
 	}
 
 	return stateObjectJson.ToByteArray()
@@ -166,17 +170,27 @@ func (obj *stateObject) FromByteArray(data []byte) error {
 	}
 
 	var abi abi.ABI
-	err = json.Unmarshal(stateObjectJson.ABI, &abi)
+	if stateObjectJson.ABI != nil {
+		err = json.Unmarshal(stateObjectJson.ABI, &abi)
+		if err != nil {
+			return err
+		}
+	}
+
+	var origin Storage
+	err = json.Unmarshal(stateObjectJson.Origin, &origin)
 	if err != nil {
 		return err
 	}
 
 	obj.data = acc
 	obj.abi = &abi
+	obj.abiBytes = stateObjectJson.ABI
 	obj.address = common.BytesToAddress(stateObjectJson.Address)
 	obj.addrHash = common.BytesToHash(stateObjectJson.AddrHash)
-	obj.originStorage = make(map[common.Hash]common.Hash)
-
+	obj.originStorage = origin
+	obj.code = stateObjectJson.Code
+	fmt.Println(obj.code)
 	return nil
 }
 

@@ -49,10 +49,10 @@ func (s *MStateDB) ResetStateObject(addr common.Address) {
 	delete(s.stateObjects, addr)
 }
 
-func (s *MStateDB) SetABI(addr common.Address, abi *abi.ABI) {
+func (s *MStateDB) SetABI(addr common.Address, abi *abi.ABI, bytes []byte) {
 	obj := s.getStateObject(addr)
 	if obj != nil {
-		s.setABI(addr, abi)
+		s.setABI(addr, abi, bytes)
 	}
 }
 
@@ -64,8 +64,9 @@ func (s *MStateDB) GetABI(addr common.Address) *abi.ABI {
 	return nil
 }
 
-func (s *MStateDB) setABI(addr common.Address, abi *abi.ABI) {
+func (s *MStateDB) setABI(addr common.Address, abi *abi.ABI, bytes []byte) {
 	s.stateObjects[addr].abi = abi
+	s.stateObjects[addr].abiBytes = bytes
 }
 
 func (s *MStateDB) decodeToStateObject(bytes []byte) *stateObject {

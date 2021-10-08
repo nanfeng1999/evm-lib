@@ -54,6 +54,12 @@ func (z *StateObjectJson) DecodeMsg(dc *msgp.Reader) (err error) {
 				err = msgp.WrapError(err, "Code")
 				return
 			}
+		case "Origin":
+			z.Origin, err = dc.ReadBytes(z.Origin)
+			if err != nil {
+				err = msgp.WrapError(err, "Origin")
+				return
+			}
 		default:
 			err = dc.Skip()
 			if err != nil {
@@ -67,9 +73,9 @@ func (z *StateObjectJson) DecodeMsg(dc *msgp.Reader) (err error) {
 
 // EncodeMsg implements msgp.Encodable
 func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
-	// map header, size 5
+	// map header, size 6
 	// write "ABI"
-	err = en.Append(0x85, 0xa3, 0x41, 0x42, 0x49)
+	err = en.Append(0x86, 0xa3, 0x41, 0x42, 0x49)
 	if err != nil {
 		return
 	}
@@ -118,15 +124,25 @@ func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Code")
 		return
 	}
+	// write "Origin"
+	err = en.Append(0xa6, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e)
+	if err != nil {
+		return
+	}
+	err = en.WriteBytes(z.Origin)
+	if err != nil {
+		err = msgp.WrapError(err, "Origin")
+		return
+	}
 	return
 }
 
 // MarshalMsg implements msgp.Marshaler
 func (z *StateObjectJson) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
-	// map header, size 5
+	// map header, size 6
 	// string "ABI"
-	o = append(o, 0x85, 0xa3, 0x41, 0x42, 0x49)
+	o = append(o, 0x86, 0xa3, 0x41, 0x42, 0x49)
 	o = msgp.AppendBytes(o, z.ABI)
 	// string "Address"
 	o = append(o, 0xa7, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73)
@@ -140,6 +156,9 @@ func (z *StateObjectJson) MarshalMsg(b []byte) (o []byte, err error) {
 	// string "Code"
 	o = append(o, 0xa4, 0x43, 0x6f, 0x64, 0x65)
 	o = msgp.AppendBytes(o, z.Code)
+	// string "Origin"
+	o = append(o, 0xa6, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e)
+	o = msgp.AppendBytes(o, z.Origin)
 	return
 }
 
@@ -191,6 +210,12 @@ func (z *StateObjectJson) UnmarshalMsg(bts []byte) (o []byte, err error) {
 				err = msgp.WrapError(err, "Code")
 				return
 			}
+		case "Origin":
+			z.Origin, bts, err = msgp.ReadBytesBytes(bts, z.Origin)
+			if err != nil {
+				err = msgp.WrapError(err, "Origin")
+				return
+			}
 		default:
 			bts, err = msgp.Skip(bts)
 			if err != nil {
@@ -205,6 +230,6 @@ func (z *StateObjectJson) UnmarshalMsg(bts []byte) (o []byte, err error) {
 
 // Msgsize returns an upper bound estimate of the number of bytes occupied by the serialized message
 func (z *StateObjectJson) Msgsize() (s int) {
-	s = 1 + 4 + msgp.BytesPrefixSize + len(z.ABI) + 8 + msgp.BytesPrefixSize + len(z.Address) + 9 + msgp.BytesPrefixSize + len(z.AddrHash) + 5 + msgp.BytesPrefixSize + len(z.Data) + 5 + msgp.BytesPrefixSize + len(z.Code)
+	s = 1 + 4 + msgp.BytesPrefixSize + len(z.ABI) + 8 + msgp.BytesPrefixSize + len(z.Address) + 9 + msgp.BytesPrefixSize + len(z.AddrHash) + 5 + msgp.BytesPrefixSize + len(z.Data) + 5 + msgp.BytesPrefixSize + len(z.Code) + 7 + msgp.BytesPrefixSize + len(z.Origin)
 	return
 }

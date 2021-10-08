@@ -18,6 +18,7 @@ type StateObjectJson struct {
 	AddrHash []byte
 	Data     []byte
 	Code     []byte
+	Origin   []byte
 }
 
 func (s *StateObjectJson) ToByteArray() ([]byte, error) {
