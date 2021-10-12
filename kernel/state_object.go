@@ -10,7 +10,6 @@ package kernel
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/yzy-github/evm-lib/abi"
 	"github.com/yzy-github/evm-lib/common"
 	"github.com/yzy-github/evm-lib/crypto"
@@ -142,7 +141,6 @@ func (obj *stateObject) ToByteArray() ([]byte, error) {
 	dataBytes, _ := json.Marshal(&obj.data)
 
 	originStorageBytes, _ := json.Marshal(&obj.originStorage)
-
 	var stateObjectJson = &StateObjectJson{
 		ABI:      obj.abiBytes,
 		Address:  obj.address.Bytes(),
@@ -151,7 +149,6 @@ func (obj *stateObject) ToByteArray() ([]byte, error) {
 		Code:     obj.code,
 		Origin:   originStorageBytes,
 	}
-
 	return stateObjectJson.ToByteArray()
 
 }
@@ -162,7 +159,6 @@ func (obj *stateObject) FromByteArray(data []byte) error {
 	if err != nil {
 		return err
 	}
-
 	var acc Account
 	err = json.Unmarshal(stateObjectJson.Data, &acc)
 	if err != nil {
@@ -176,7 +172,6 @@ func (obj *stateObject) FromByteArray(data []byte) error {
 			return err
 		}
 	}
-
 	var origin Storage
 	err = json.Unmarshal(stateObjectJson.Origin, &origin)
 	if err != nil {
@@ -190,7 +185,6 @@ func (obj *stateObject) FromByteArray(data []byte) error {
 	obj.addrHash = common.BytesToHash(stateObjectJson.AddrHash)
 	obj.originStorage = origin
 	obj.code = stateObjectJson.Code
-	fmt.Println(obj.code)
 	return nil
 }
 

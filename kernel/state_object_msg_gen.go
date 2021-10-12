@@ -24,37 +24,37 @@ func (z *StateObjectJson) DecodeMsg(dc *msgp.Reader) (err error) {
 			return
 		}
 		switch msgp.UnsafeString(field) {
-		case "ABI":
+		case "abi":
 			z.ABI, err = dc.ReadBytes(z.ABI)
 			if err != nil {
 				err = msgp.WrapError(err, "ABI")
 				return
 			}
-		case "Address":
+		case "address":
 			z.Address, err = dc.ReadBytes(z.Address)
 			if err != nil {
 				err = msgp.WrapError(err, "Address")
 				return
 			}
-		case "AddrHash":
+		case "addrhash":
 			z.AddrHash, err = dc.ReadBytes(z.AddrHash)
 			if err != nil {
 				err = msgp.WrapError(err, "AddrHash")
 				return
 			}
-		case "Data":
+		case "data":
 			z.Data, err = dc.ReadBytes(z.Data)
 			if err != nil {
 				err = msgp.WrapError(err, "Data")
 				return
 			}
-		case "Code":
+		case "code":
 			z.Code, err = dc.ReadBytes(z.Code)
 			if err != nil {
 				err = msgp.WrapError(err, "Code")
 				return
 			}
-		case "Origin":
+		case "origin":
 			z.Origin, err = dc.ReadBytes(z.Origin)
 			if err != nil {
 				err = msgp.WrapError(err, "Origin")
@@ -74,8 +74,8 @@ func (z *StateObjectJson) DecodeMsg(dc *msgp.Reader) (err error) {
 // EncodeMsg implements msgp.Encodable
 func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 	// map header, size 6
-	// write "ABI"
-	err = en.Append(0x86, 0xa3, 0x41, 0x42, 0x49)
+	// write "abi"
+	err = en.Append(0x86, 0xa3, 0x61, 0x62, 0x69)
 	if err != nil {
 		return
 	}
@@ -84,8 +84,8 @@ func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "ABI")
 		return
 	}
-	// write "Address"
-	err = en.Append(0xa7, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73)
+	// write "address"
+	err = en.Append(0xa7, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73)
 	if err != nil {
 		return
 	}
@@ -94,8 +94,8 @@ func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Address")
 		return
 	}
-	// write "AddrHash"
-	err = en.Append(0xa8, 0x41, 0x64, 0x64, 0x72, 0x48, 0x61, 0x73, 0x68)
+	// write "addrhash"
+	err = en.Append(0xa8, 0x61, 0x64, 0x64, 0x72, 0x68, 0x61, 0x73, 0x68)
 	if err != nil {
 		return
 	}
@@ -104,8 +104,8 @@ func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "AddrHash")
 		return
 	}
-	// write "Data"
-	err = en.Append(0xa4, 0x44, 0x61, 0x74, 0x61)
+	// write "data"
+	err = en.Append(0xa4, 0x64, 0x61, 0x74, 0x61)
 	if err != nil {
 		return
 	}
@@ -114,8 +114,8 @@ func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Data")
 		return
 	}
-	// write "Code"
-	err = en.Append(0xa4, 0x43, 0x6f, 0x64, 0x65)
+	// write "code"
+	err = en.Append(0xa4, 0x63, 0x6f, 0x64, 0x65)
 	if err != nil {
 		return
 	}
@@ -124,8 +124,8 @@ func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 		err = msgp.WrapError(err, "Code")
 		return
 	}
-	// write "Origin"
-	err = en.Append(0xa6, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e)
+	// write "origin"
+	err = en.Append(0xa6, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e)
 	if err != nil {
 		return
 	}
@@ -141,23 +141,23 @@ func (z *StateObjectJson) EncodeMsg(en *msgp.Writer) (err error) {
 func (z *StateObjectJson) MarshalMsg(b []byte) (o []byte, err error) {
 	o = msgp.Require(b, z.Msgsize())
 	// map header, size 6
-	// string "ABI"
-	o = append(o, 0x86, 0xa3, 0x41, 0x42, 0x49)
+	// string "abi"
+	o = append(o, 0x86, 0xa3, 0x61, 0x62, 0x69)
 	o = msgp.AppendBytes(o, z.ABI)
-	// string "Address"
-	o = append(o, 0xa7, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73)
+	// string "address"
+	o = append(o, 0xa7, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73)
 	o = msgp.AppendBytes(o, z.Address)
-	// string "AddrHash"
-	o = append(o, 0xa8, 0x41, 0x64, 0x64, 0x72, 0x48, 0x61, 0x73, 0x68)
+	// string "addrhash"
+	o = append(o, 0xa8, 0x61, 0x64, 0x64, 0x72, 0x68, 0x61, 0x73, 0x68)
 	o = msgp.AppendBytes(o, z.AddrHash)
-	// string "Data"
-	o = append(o, 0xa4, 0x44, 0x61, 0x74, 0x61)
+	// string "data"
+	o = append(o, 0xa4, 0x64, 0x61, 0x74, 0x61)
 	o = msgp.AppendBytes(o, z.Data)
-	// string "Code"
-	o = append(o, 0xa4, 0x43, 0x6f, 0x64, 0x65)
+	// string "code"
+	o = append(o, 0xa4, 0x63, 0x6f, 0x64, 0x65)
 	o = msgp.AppendBytes(o, z.Code)
-	// string "Origin"
-	o = append(o, 0xa6, 0x4f, 0x72, 0x69, 0x67, 0x69, 0x6e)
+	// string "origin"
+	o = append(o, 0xa6, 0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e)
 	o = msgp.AppendBytes(o, z.Origin)
 	return
 }
@@ -180,37 +180,37 @@ func (z *StateObjectJson) UnmarshalMsg(bts []byte) (o []byte, err error) {
 			return
 		}
 		switch msgp.UnsafeString(field) {
-		case "ABI":
+		case "abi":
 			z.ABI, bts, err = msgp.ReadBytesBytes(bts, z.ABI)
 			if err != nil {
 				err = msgp.WrapError(err, "ABI")
 				return
 			}
-		case "Address":
+		case "address":
 			z.Address, bts, err = msgp.ReadBytesBytes(bts, z.Address)
 			if err != nil {
 				err = msgp.WrapError(err, "Address")
 				return
 			}
-		case "AddrHash":
+		case "addrhash":
 			z.AddrHash, bts, err = msgp.ReadBytesBytes(bts, z.AddrHash)
 			if err != nil {
 				err = msgp.WrapError(err, "AddrHash")
 				return
 			}
-		case "Data":
+		case "data":
 			z.Data, bts, err = msgp.ReadBytesBytes(bts, z.Data)
 			if err != nil {
 				err = msgp.WrapError(err, "Data")
 				return
 			}
-		case "Code":
+		case "code":
 			z.Code, bts, err = msgp.ReadBytesBytes(bts, z.Code)
 			if err != nil {
 				err = msgp.WrapError(err, "Code")
 				return
 			}
-		case "Origin":
+		case "origin":
 			z.Origin, bts, err = msgp.ReadBytesBytes(bts, z.Origin)
 			if err != nil {
 				err = msgp.WrapError(err, "Origin")

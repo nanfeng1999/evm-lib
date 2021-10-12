@@ -13,23 +13,26 @@ import (
 
 //go:generate msgp
 type StateObjectJson struct {
-	ABI      []byte
-	Address  []byte
-	AddrHash []byte
-	Data     []byte
-	Code     []byte
-	Origin   []byte
+	ABI      []byte `msg:"abi"`
+	Address  []byte `msg:"address"`
+	AddrHash []byte `msg:"addrhash"`
+	Data     []byte `msg:"data"`
+	Code     []byte `msg:"code"`
+	Origin   []byte `msg:"origin"`
 }
 
 func (s *StateObjectJson) ToByteArray() ([]byte, error) {
-	data, _ := s.MarshalMsg(nil)
+	data, err := s.MarshalMsg(nil)
+	if err != nil {
+		fmt.Println("StateObjectJson to byte err=", err)
+	}
 	return data, nil
 }
 
 func (s *StateObjectJson) FromByteArray(data []byte) error {
 	_, err := s.UnmarshalMsg(data)
 	if err != nil {
-		fmt.Println("err=", err)
+		fmt.Println("StateObjectJson from byte err=", err)
 	}
 	return err
 }
