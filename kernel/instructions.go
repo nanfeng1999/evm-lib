@@ -18,15 +18,15 @@ package kernel
 import (
 	"errors"
 	"fmt"
-	"github.com/yzy-github/evm-lib/common"
+	"github.com/nanfeng1999/evm-lib/common"
 	"math/big"
 )
 
 var (
-	errWriteProtection       = errors.New("github.com/yzy-github/evm-lib: write protection")
-	errReturnDataOutOfBounds = errors.New("github.com/yzy-github/evm-lib: return data out of bounds")
-	errExecutionReverted     = errors.New("github.com/yzy-github/evm-lib: execution reverted")
-	errMaxCodeSizeExceeded   = errors.New("github.com/yzy-github/evm-lib: max code size exceeded")
+	errWriteProtection       = errors.New("github.com/nanfeng1999/evm-lib: write protection")
+	errReturnDataOutOfBounds = errors.New("github.com/nanfeng1999/evm-lib: return data out of bounds")
+	errExecutionReverted     = errors.New("github.com/nanfeng1999/evm-lib: execution reverted")
+	errMaxCodeSizeExceeded   = errors.New("github.com/nanfeng1999/evm-lib: max code size exceeded")
 )
 
 func opAdd(pc *uint64, evm *EVM, contract *Contract, memory *Memory, stack *Stack) ([]byte, error) {

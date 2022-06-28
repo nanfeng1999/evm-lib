@@ -1,8 +1,8 @@
 package kernel
 
 import (
-	"github.com/yzy-github/evm-lib/abi"
-	"github.com/yzy-github/evm-lib/common"
+	"github.com/nanfeng1999/evm-lib/abi"
+	"github.com/nanfeng1999/evm-lib/common"
 	"math/big"
 )
 

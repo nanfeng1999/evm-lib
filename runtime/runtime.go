@@ -1,8 +1,8 @@
 package runtime
 
 import (
-	"github.com/yzy-github/evm-lib/common"
-	"github.com/yzy-github/evm-lib/kernel"
+	"github.com/nanfeng1999/evm-lib/common"
+	"github.com/nanfeng1999/evm-lib/kernel"
 	"math/big"
 	"time"
 )

@@ -26,9 +26,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yzy-github/evm-lib/common"
-	"github.com/yzy-github/evm-lib/common/math"
-	"github.com/yzy-github/evm-lib/crypto"
+	"github.com/nanfeng1999/evm-lib/common"
+	"github.com/nanfeng1999/evm-lib/common/math"
+	"github.com/nanfeng1999/evm-lib/crypto"
 )
 
 const jsondata = `

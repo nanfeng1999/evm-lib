@@ -26,8 +26,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/yzy-github/evm-lib/common"
-	"github.com/yzy-github/evm-lib/common/hexutil"
+	"github.com/nanfeng1999/evm-lib/common"
+	"github.com/nanfeng1999/evm-lib/common/hexutil"
 )
 
 var testAddrHex = "970e8128ab834e8eac17ab8e3812f010678cf791"

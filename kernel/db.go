@@ -7,7 +7,7 @@
  */
 package kernel
 
-import "github.com/yzy-github/evm-lib/common"
+import "github.com/nanfeng1999/evm-lib/common"
 
 type DB interface {
 	// 根据传入的hash 从数据库中取出rlp编码的stateObject 并进行解码

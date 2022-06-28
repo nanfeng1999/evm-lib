@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/yzy-github/evm-lib/common"
-	"github.com/yzy-github/evm-lib/crypto"
+	"github.com/nanfeng1999/evm-lib/common"
+	"github.com/nanfeng1999/evm-lib/crypto"
 )
 
 // Event is an event potentially triggered by the EVM's LOG mechanism. The Event

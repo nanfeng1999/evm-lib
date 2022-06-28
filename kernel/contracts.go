@@ -19,11 +19,11 @@ package kernel
 import (
 	"crypto/sha256"
 	"errors"
-	"github.com/yzy-github/evm-lib/common"
+	"github.com/nanfeng1999/evm-lib/common"
 	"math/big"
 
-	"github.com/yzy-github/evm-lib/crypto"
-	"github.com/yzy-github/evm-lib/crypto/bn256"
+	"github.com/nanfeng1999/evm-lib/crypto"
+	"github.com/nanfeng1999/evm-lib/crypto/bn256"
 	"golang.org/x/crypto/ripemd160"
 )
 

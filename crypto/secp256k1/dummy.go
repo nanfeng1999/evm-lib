@@ -14,7 +14,7 @@
 package secp256k1
 
 import (
-	_ "github.com/yzy-github/evm-lib/crypto/secp256k1/libsecp256k1/include"
-	_ "github.com/yzy-github/evm-lib/crypto/secp256k1/libsecp256k1/src"
-	_ "github.com/yzy-github/evm-lib/crypto/secp256k1/libsecp256k1/src/modules/recovery"
+	_ "github.com/nanfeng1999/evm-lib/crypto/secp256k1/libsecp256k1/include"
+	_ "github.com/nanfeng1999/evm-lib/crypto/secp256k1/libsecp256k1/src"
+	_ "github.com/nanfeng1999/evm-lib/crypto/secp256k1/libsecp256k1/src/modules/recovery"
 )
